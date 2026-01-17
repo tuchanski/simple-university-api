@@ -9,4 +9,21 @@ class Professor extends Model
 {
     /** @use HasFactory<\Database\Factories\ProfessorFactory> */
     use HasFactory;
+
+    protected $table = 'professors';
+
+    protected $fillable = [
+        'name',
+        'email',
+        'cpf',
+        'birth_date',
+        'gender',
+        'phone',
+        'address',
+        'profile_picture',
+    ];
+
+    public function courses() {
+        return $this->hasMany(Course::class);
+    }
 }
