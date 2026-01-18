@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\Exceptions\CpfAlreadyRegisteredException;
+use App\Exceptions\EmailAlreadyRegisteredException;
+use App\Exceptions\ProfessorNotFoundException;
 use App\Models\Professor;
 use App\Repositories\ProfessorRepository;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -25,7 +28,7 @@ class ProfessorService
         $professor =  $this->professorRepository->findById($id);
 
         if (is_null($professor)) {
-            throw new \Exception("Professor not found");
+            throw new ProfessorNotFoundException();
         }
 
         return $professor;
@@ -34,11 +37,11 @@ class ProfessorService
     public function createProfessor(array $data) : Professor {
 
         if ($this->professorRepository->findProfessorByEmail($data['email']) != null) {
-            throw new \Exception('Email already registered');
+            throw new EmailAlreadyRegisteredException();
         }
 
         if ($this->professorRepository->findProfessorByCpf($data['cpf']) != null) {
-            throw new \Exception('CPF already registered');
+            throw new CpfAlreadyRegisteredException();
         }
 
         return $this->professorRepository->create($data);
@@ -48,7 +51,7 @@ class ProfessorService
         $professor = $this->professorRepository->findById($id);
 
         if ($professor == null) {
-            throw new \Exception('Professor not found');
+            throw new ProfessorNotFoundException();
         }
 
         $this->professorRepository->delete($professor);

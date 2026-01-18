@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\CpfAlreadyRegisteredException;
+use App\Exceptions\EmailAlreadyRegisteredException;
+use App\Exceptions\ProfessorNotFoundException;
 use App\Models\Professor;
 use App\Services\ProfessorService;
 use Illuminate\Http\Request;
@@ -24,8 +27,8 @@ class ProfessorController extends Controller
     {
         try {
             return response($this->professorService->createProfessor($request->all()), 201);
-        } catch (\Exception $exception) {
-            return response(['message' => $exception->getMessage()], 400);
+        } catch (EmailAlreadyRegisteredException|CpfAlreadyRegisteredException $exception) {
+            return response(['message' => $exception->getMessage()], $exception->getCode());
         }
     }
 
@@ -33,8 +36,8 @@ class ProfessorController extends Controller
     {
         try {
             return response($this->professorService->getProfessor($id), 200);
-        } catch (\Exception $exception) {
-            return response(['message' => $exception->getMessage()], 400);
+        } catch (ProfessorNotFoundException $exception) {
+            return response(['message' => $exception->getMessage()], $exception->getCode());
         }
     }
 
@@ -61,8 +64,8 @@ class ProfessorController extends Controller
     {
         try {
             return response($this->professorService->deleteProfessor($id), 200);
-        } catch (\Exception $exception) {
-            return response(['message' => $exception->getMessage()], 400);
+        } catch (ProfessorNotFoundException $exception) {
+            return response(['message' => $exception->getMessage()], $exception->getCode());
         }
     }
 }
