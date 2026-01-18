@@ -76,8 +76,18 @@ class CourseController extends Controller
     public function destroyEnrollStudent(int $id, Request $request) {
         try {
             $this->courseService->unenrollStudent($id, $request->all());
+            return response(null, 204);
         }
         catch (CourseNotFoundException|StudentAlreadyEnrolledException|StudentNotFoundException|StudentNotEnrolledException $exception) {
+            return GlobalExceptionHandler::retrieveResponse($exception);
+        }
+    }
+
+    public function getEnrolledStudents(int $id) {
+        try {
+            return response($this->courseService->getEnrolledStudents($id), 200);
+        }
+        catch (CourseNotFoundException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }

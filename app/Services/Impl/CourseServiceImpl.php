@@ -119,4 +119,14 @@ class CourseServiceImpl implements CourseService
 
         $student->courses()->detach($course);
     }
+
+    public function getEnrolledStudents(int $courseId): Collection {
+        $course = $this->getCourseById($courseId);
+
+        if (is_null($course)) {
+            throw new CourseNotFoundException();
+        }
+
+        return $course->students()->getResults();
+    }
 }
