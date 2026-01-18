@@ -60,6 +60,14 @@ class ProfessorService
         }
 
         if (
+            array_key_exists('name', $data) &&
+            !is_null($data['name']) &&
+            $data['name'] !== $professor->name
+        ) {
+            $professor->name = $data['name'];
+        }
+
+        if (
             array_key_exists('email', $data) &&
             $data['email'] !== null &&
             $data['email'] !== $professor->email
