@@ -140,7 +140,7 @@ class ProfessorService
             throw new ProfessorNotFoundException();
         }
 
-        $this->professorRepository->delete($professor);
+        $this->professorRepository->delete($professor->id);
     }
 
 }
