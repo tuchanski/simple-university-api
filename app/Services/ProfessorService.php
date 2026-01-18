@@ -47,6 +47,80 @@ class ProfessorService
         return $this->professorRepository->create($data);
     }
 
+    public function updateProfessor(int $id, array $data): Professor
+    {
+        $professor = $this->professorRepository->findById($id);
+
+        if (is_null($professor)) {
+            throw new ProfessorNotFoundException();
+        }
+
+        if (
+            array_key_exists('email', $data) &&
+            $data['email'] !== null &&
+            $data['email'] !== $professor->email
+        ) {
+            if ($this->professorRepository->existsByEmail($data['email'])) {
+                throw new EmailAlreadyRegisteredException();
+            }
+
+            $professor->email = $data['email'];
+        }
+
+        if (
+            array_key_exists('cpf', $data) &&
+            $data['cpf'] !== null &&
+            $data['cpf'] !== $professor->cpf
+        ) {
+            if ($this->professorRepository->existsByCpf($data['cpf'])) {
+                throw new CpfAlreadyRegisteredException();
+            }
+
+            $professor->cpf = $data['cpf'];
+        }
+
+        if (
+            array_key_exists('birth_date', $data) &&
+            $data['birth_date'] !== null &&
+            $data['birth_date'] !== $professor->birth_date?->toDateString()
+        ) {
+            $professor->birth_date = $data['birth_date'];
+        }
+
+        if (
+            array_key_exists('gender', $data) &&
+            $data['gender'] !== null &&
+            $data['gender'] !== $professor->gender
+        ) {
+            $professor->gender = $data['gender'];
+        }
+
+        if (
+            array_key_exists('phone', $data) &&
+            $data['phone'] !== null &&
+            $data['phone'] !== $professor->phone
+        ) {
+            $professor->phone = $data['phone'];
+        }
+
+        if (
+            array_key_exists('address', $data) &&
+            $data['address'] !== null &&
+            $data['address'] !== $professor->address
+        ) {
+            $professor->address = $data['address'];
+        }
+
+        if (array_key_exists('profile_picture', $data)) {
+            $professor->profile_picture = $data['profile_picture'];
+        }
+
+        $professor->save();
+
+        return $professor;
+    }
+
+
     public function deleteProfessor(int $id) : void {
         $professor = $this->professorRepository->findById($id);
 

@@ -46,5 +46,13 @@ class ProfessorRepository
         return Professor::query()->where('id', $id)->exists();
     }
 
+    public function existsByEmail(string $email): bool {
+        return Professor::query()->where('email', $email)->exists();
+    }
+
+    public function existsByCpf(string $cpf): bool {
+        return Professor::query()->where('cpf', $cpf)->exists();
+    }
+
 
 }

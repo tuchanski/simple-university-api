@@ -42,19 +42,15 @@ class ProfessorController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Professor $professors)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Professor $professors)
+    public function update(Request $request, int $id)
     {
-        //
+        try {
+            return response($this->professorService->updateProfessor($id, $request->all()), 200);
+        } catch (CpfAlreadyRegisteredException|EmailAlreadyRegisteredException|ProfessorNotFoundException $e) {
+            return response(['message' => $e->getMessage()], $e->getCode());
+        }
     }
 
     /**
