@@ -20,11 +20,28 @@ class ProfessorService
         $this->professorRepository = new ProfessorRepository();
     }
 
-    public function getAllProfessors() : Collection {
+    public function createProfessor(array $data) : Professor
+    {
+        if ($this->professorRepository->findProfessorByEmail($data['email']) !== null)
+        {
+            throw new EmailAlreadyRegisteredException();
+        }
+
+        if ($this->professorRepository->findProfessorByCpf($data['cpf']) !== null)
+        {
+            throw new CpfAlreadyRegisteredException();
+        }
+
+        return $this->professorRepository->create($data);
+    }
+
+    public function getAllProfessors() : Collection
+    {
         return $this->professorRepository->findAll();
     }
 
-    public function getProfessor(int $id) : ?Professor {
+    public function getProfessorById(int $id) : ?Professor
+    {
         $professor =  $this->professorRepository->findById($id);
 
         if (is_null($professor)) {
@@ -34,20 +51,7 @@ class ProfessorService
         return $professor;
     }
 
-    public function createProfessor(array $data) : Professor {
-
-        if ($this->professorRepository->findProfessorByEmail($data['email']) != null) {
-            throw new EmailAlreadyRegisteredException();
-        }
-
-        if ($this->professorRepository->findProfessorByCpf($data['cpf']) != null) {
-            throw new CpfAlreadyRegisteredException();
-        }
-
-        return $this->professorRepository->create($data);
-    }
-
-    public function updateProfessor(int $id, array $data): Professor
+    public function updateProfessorById(int $id, array $data): Professor
     {
         $professor = $this->professorRepository->findById($id);
 
@@ -120,8 +124,8 @@ class ProfessorService
         return $professor;
     }
 
-
-    public function deleteProfessor(int $id) : void {
+    public function deleteProfessor(int $id) : void
+    {
         $professor = $this->professorRepository->findById($id);
 
         if ($professor == null) {
