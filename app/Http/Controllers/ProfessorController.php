@@ -20,28 +20,20 @@ class ProfessorController extends Controller
         return response($this->professorService->getAllProfessors(), 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Professor $professors)
+    public function show(int $id)
     {
-        //
+        $professor = $this->professorService->getProfessor($id);
+
+        if ($professor == null) {
+            return response(['message' => 'Professor not found'], 404);
+        }
+
+        return response($this->professorService->getProfessor($id), 200);
     }
 
     /**
