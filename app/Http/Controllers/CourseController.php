@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\CourseNotFoundException;
 use App\Exceptions\StudentAlreadyEnrolledException;
+use App\Exceptions\StudentNotEnrolledException;
 use App\Exceptions\StudentNotFoundException;
 use App\Helpers\GlobalExceptionHandler;
 use App\Models\Course;
@@ -68,6 +69,15 @@ class CourseController extends Controller
             $this->courseService->enrollStudent($id, $request->all());
             return response(['message' => 'Student enrolled successfully'], 201);
         } catch (CourseNotFoundException|StudentAlreadyEnrolledException|StudentNotFoundException $exception) {
+            return GlobalExceptionHandler::retrieveResponse($exception);
+        }
+    }
+
+    public function destroyEnrollStudent(int $id, Request $request) {
+        try {
+            $this->courseService->unenrollStudent($id, $request->all());
+        }
+        catch (CourseNotFoundException|StudentAlreadyEnrolledException|StudentNotFoundException|StudentNotEnrolledException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }

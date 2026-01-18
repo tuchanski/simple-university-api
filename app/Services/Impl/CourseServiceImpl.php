@@ -5,6 +5,7 @@ namespace App\Services\Impl;
 use App\Exceptions\CourseNotFoundException;
 use App\Exceptions\EntityNotFoundException;
 use App\Exceptions\StudentAlreadyEnrolledException;
+use App\Exceptions\StudentNotEnrolledException;
 use App\Exceptions\StudentNotFoundException;
 use App\Models\Course;
 use App\Models\Professor;
@@ -97,5 +98,25 @@ class CourseServiceImpl implements CourseService
         }
 
         $student->courses()->attach($course);
+    }
+
+    public function unenrollStudent(int $courseId, array $data): void {
+        $course = $this->getCourseById($courseId);
+
+        if (is_null($course)) {
+            throw new CourseNotFoundException();
+        }
+
+        $student = Student::query()->find($data['student_id']);
+
+        if (is_null($student)) {
+            throw new StudentNotFoundException();
+        }
+
+        if (!$course->students()->find($data['student_id'])) {
+            throw new StudentNotEnrolledException();
+        }
+
+        $student->courses()->detach($course);
     }
 }
