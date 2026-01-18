@@ -124,7 +124,7 @@ class ProfessorService
         return $professor;
     }
 
-    public function deleteProfessor(int $id) : void
+    public function deleteProfessorById(int $id) : void
     {
         $professor = $this->professorRepository->findById($id);
 
