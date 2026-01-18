@@ -22,11 +22,13 @@ class ProfessorService
     }
 
     public function getProfessor(int $id) : ?Professor {
-        try {
-            return $this->professorRepository->findById($id);
-        } catch (ModelNotFoundException $e) {
-            return null;
+        $professor =  $this->professorRepository->findById($id);
+
+        if (is_null($professor)) {
+            throw new \Exception("Professor not found");
         }
+
+        return $professor;
     }
 
     public function createProfessor(array $data) : Professor {
@@ -40,6 +42,16 @@ class ProfessorService
         }
 
         return $this->professorRepository->create($data);
+    }
+
+    public function deleteProfessor(int $id) : void {
+        $professor = $this->professorRepository->findById($id);
+
+        if ($professor == null) {
+            throw new \Exception('Professor not found');
+        }
+
+        $this->professorRepository->delete($professor);
     }
 
 }

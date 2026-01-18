@@ -4,21 +4,22 @@ namespace App\Repositories;
 
 use App\Models\Professor;
 use  \Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ProfessorRepository
 {
-    public function __construct()
-    {
-        //
-    }
 
     public function findAll(): Collection
     {
         return Professor::all();
     }
 
-    public function findById(int $id): Professor {
-        return Professor::query()->findOrFail($id);
+    public function findById(int $id): ?Professor {
+        try {
+            return Professor::query()->findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            return null;
+        }
     }
 
     public function findProfessorByEmail(string $email): ?Professor {
@@ -29,7 +30,7 @@ class ProfessorRepository
         return Professor::query()->where('cpf', $cpf)->first();
     }
 
-    public function create(array $attributes): Professor {
+    public function create(array $attributes): ?Professor {
         return Professor::create($attributes);
     }
 

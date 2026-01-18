@@ -31,13 +31,11 @@ class ProfessorController extends Controller
 
     public function show(int $id)
     {
-        $professor = $this->professorService->getProfessor($id);
-
-        if ($professor == null) {
-            return response(['message' => 'Professor not found'], 404);
+        try {
+            return response($this->professorService->getProfessor($id), 200);
+        } catch (\Exception $exception) {
+            return response(['message' => $exception->getMessage()], 400);
         }
-
-        return response($this->professorService->getProfessor($id), 200);
     }
 
     /**
@@ -59,8 +57,12 @@ class ProfessorController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Professor $professors)
+    public function destroy(int $id)
     {
-        //
+        try {
+            return response($this->professorService->deleteProfessor($id), 200);
+        } catch (\Exception $exception) {
+            return response(['message' => $exception->getMessage()], 400);
+        }
     }
 }
