@@ -7,6 +7,7 @@ use App\Exceptions\CpfAlreadyRegisteredException;
 use App\Exceptions\EmailAlreadyRegisteredException;
 use App\Exceptions\InvalidGenderException;
 use App\Exceptions\ProfessorNotFoundException;
+use App\Helpers\Utilities;
 use App\Models\Professor;
 use App\Repositories\Impl\ProfessorRepository;
 use Illuminate\Support\Collection;
@@ -33,7 +34,7 @@ class ProfessorService
             throw new CpfAlreadyRegisteredException();
         }
 
-        if (!$this->isGenderValid($data['gender'])) {
+        if (!Utilities::isGenderValid($data['gender'])) {
             throw new InvalidGenderException();
         }
 
@@ -146,18 +147,6 @@ class ProfessorService
         }
 
         $this->professorRepository->delete($professor->id);
-    }
-
-    private function isGenderValid($gender) : bool {
-        $genderOptions = Gender::cases();
-
-        foreach ($genderOptions as $genderOption) {
-            if ($genderOption->value === $gender) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
 }
