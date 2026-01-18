@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CourseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,4 +21,12 @@ Route::prefix('students')->name('students.')->group(function () {
     Route::get('/{id}', [StudentController::class, 'show']);
     Route::delete('/{id}', [StudentController::class, 'destroy']);
     Route::patch('/{id}', [StudentController::class, 'update']);
+});
+
+Route::prefix('courses')->name('courses.')->group(function () {
+    Route::get('/', [CourseController::class, 'index']);
+    Route::post('/', [CourseController::class, 'store']);
+    Route::get('/{id}', [CourseController::class, 'show']);
+    Route::delete('/{id}', [CourseController::class, 'destroy']);
+    Route::patch('/{id}', [CourseController::class, 'update']);
 });
