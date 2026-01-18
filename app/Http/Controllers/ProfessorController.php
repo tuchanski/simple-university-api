@@ -4,19 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\CpfAlreadyRegisteredException;
 use App\Exceptions\EmailAlreadyRegisteredException;
+use App\Exceptions\InvalidEmailException;
 use App\Exceptions\InvalidGenderException;
 use App\Exceptions\ProfessorNotFoundException;
 use App\Helpers\GlobalExceptionHandler;
-use App\Services\ProfessorService;
+use App\Services\Impl\ProfessorServiceImpl;
 use Illuminate\Http\Request;
 
 class ProfessorController extends Controller
 {
 
-    private ProfessorService $professorService;
+    private ProfessorServiceImpl $professorService;
 
     public function __construct() {
-        $this->professorService = new ProfessorService();
+        $this->professorService = new ProfessorServiceImpl();
     }
 
     public function store(Request $request)
@@ -25,7 +26,7 @@ class ProfessorController extends Controller
         {
             return response($this->professorService->createProfessor($request->all()), 201);
         }
-        catch (EmailAlreadyRegisteredException|CpfAlreadyRegisteredException|InvalidGenderException $exception)
+        catch (EmailAlreadyRegisteredException|CpfAlreadyRegisteredException|InvalidGenderException|InvalidEmailException $exception)
         {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }

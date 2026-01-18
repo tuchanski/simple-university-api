@@ -18,4 +18,10 @@ class Utilities
 
         return false;
     }
+
+    public static function isEmailValid($email) : bool
+    {
+        $sanitizedEmail = filter_var($email, FILTER_SANITIZE_EMAIL);
+        return filter_var($sanitizedEmail, FILTER_VALIDATE_EMAIL);
+    }
 }
