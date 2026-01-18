@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Impl;
 
 use App\Models\Professor;
-use  \Illuminate\Database\Eloquent\Collection;
+use App\Repositories\BaseRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ProfessorRepository implements BaseRepositoryInterface

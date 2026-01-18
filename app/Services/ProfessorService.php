@@ -6,8 +6,7 @@ use App\Exceptions\CpfAlreadyRegisteredException;
 use App\Exceptions\EmailAlreadyRegisteredException;
 use App\Exceptions\ProfessorNotFoundException;
 use App\Models\Professor;
-use App\Repositories\ProfessorRepository;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Repositories\Impl\ProfessorRepository;
 use Illuminate\Support\Collection;
 
 class ProfessorService
