@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exceptions\CpfAlreadyRegisteredException;
 use App\Exceptions\EmailAlreadyRegisteredException;
 use App\Exceptions\ProfessorNotFoundException;
+use App\Helpers\GlobalExceptionHandler;
 use App\Services\ProfessorService;
 use Illuminate\Http\Request;
 
@@ -25,7 +26,7 @@ class ProfessorController extends Controller
         }
         catch (EmailAlreadyRegisteredException|CpfAlreadyRegisteredException $exception)
         {
-            return response(['message' => $exception->getMessage()], $exception->getCode());
+            return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }
 
@@ -42,7 +43,7 @@ class ProfessorController extends Controller
         }
         catch (ProfessorNotFoundException $exception)
         {
-            return response(['message' => $exception->getMessage()], $exception->getCode());
+            return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }
 
@@ -54,7 +55,7 @@ class ProfessorController extends Controller
         }
         catch (CpfAlreadyRegisteredException|EmailAlreadyRegisteredException|ProfessorNotFoundException $exception)
         {
-            return response(['message' => $exception->getMessage()], $exception->getCode());
+            return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }
 
@@ -67,7 +68,7 @@ class ProfessorController extends Controller
         }
         catch (ProfessorNotFoundException $exception)
         {
-            return response(['message' => $exception->getMessage()], $exception->getCode());
+            return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }
 }
