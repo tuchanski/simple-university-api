@@ -11,8 +11,8 @@ class ProfessorController extends Controller
 
     private ProfessorService $professorService;
 
-    public function __construct(ProfessorService $professorService) {
-        $this->professorService = $professorService;
+    public function __construct() {
+        $this->professorService = new ProfessorService();
     }
 
     public function index()
@@ -22,7 +22,11 @@ class ProfessorController extends Controller
 
     public function store(Request $request)
     {
-        //
+        try {
+            return response($this->professorService->createProfessor($request->all()), 201);
+        } catch (\Exception $exception) {
+            return response(['message' => $exception->getMessage()], 400);
+        }
     }
 
     public function show(int $id)

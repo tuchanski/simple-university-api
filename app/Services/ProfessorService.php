@@ -29,4 +29,17 @@ class ProfessorService
         }
     }
 
+    public function createProfessor(array $data) : Professor {
+
+        if ($this->professorRepository->findProfessorByEmail($data['email']) != null) {
+            throw new \Exception('Email already registered');
+        }
+
+        if ($this->professorRepository->findProfessorByCpf($data['cpf']) != null) {
+            throw new \Exception('CPF already registered');
+        }
+
+        return $this->professorRepository->create($data);
+    }
+
 }

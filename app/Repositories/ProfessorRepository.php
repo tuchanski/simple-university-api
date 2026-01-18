@@ -21,9 +21,16 @@ class ProfessorRepository
         return Professor::query()->findOrFail($id);
     }
 
-    public function save(Professor $professor) : Professor {
-        $professor->save();
-        return $professor;
+    public function findProfessorByEmail(string $email): ?Professor {
+        return Professor::query()->where('email', $email)->first();
+    }
+
+    public function findProfessorByCpf(string $cpf): ?Professor {
+        return Professor::query()->where('cpf', $cpf)->first();
+    }
+
+    public function create(array $attributes): Professor {
+        return Professor::create($attributes);
     }
 
     public function delete(Professor $professor) : bool {
