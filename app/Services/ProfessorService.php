@@ -22,12 +22,12 @@ class ProfessorService
 
     public function createProfessor(array $data) : Professor
     {
-        if ($this->professorRepository->findProfessorByEmail($data['email']) !== null)
+        if (!is_null($this->professorRepository->findProfessorByEmail($data['email'])))
         {
             throw new EmailAlreadyRegisteredException();
         }
 
-        if ($this->professorRepository->findProfessorByCpf($data['cpf']) !== null)
+        if (!is_null($this->professorRepository->findProfessorByCpf($data['cpf'])))
         {
             throw new CpfAlreadyRegisteredException();
         }
@@ -128,7 +128,7 @@ class ProfessorService
     {
         $professor = $this->professorRepository->findById($id);
 
-        if ($professor == null) {
+        if (is_null($professor)) {
             throw new ProfessorNotFoundException();
         }
 
