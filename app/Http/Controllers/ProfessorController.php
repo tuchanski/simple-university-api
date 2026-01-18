@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\CpfAlreadyRegisteredException;
 use App\Exceptions\EmailAlreadyRegisteredException;
+use App\Exceptions\InvalidGenderException;
 use App\Exceptions\ProfessorNotFoundException;
 use App\Helpers\GlobalExceptionHandler;
 use App\Services\ProfessorService;
@@ -24,7 +25,7 @@ class ProfessorController extends Controller
         {
             return response($this->professorService->createProfessor($request->all()), 201);
         }
-        catch (EmailAlreadyRegisteredException|CpfAlreadyRegisteredException $exception)
+        catch (EmailAlreadyRegisteredException|CpfAlreadyRegisteredException|InvalidGenderException $exception)
         {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }

@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Enums\Gender;
 use App\Exceptions\CpfAlreadyRegisteredException;
 use App\Exceptions\EmailAlreadyRegisteredException;
+use App\Exceptions\InvalidGenderException;
 use App\Exceptions\ProfessorNotFoundException;
 use App\Models\Professor;
 use App\Repositories\Impl\ProfessorRepository;
@@ -29,6 +31,10 @@ class ProfessorService
         if (!is_null($this->professorRepository->findProfessorByCpf($data['cpf'])))
         {
             throw new CpfAlreadyRegisteredException();
+        }
+
+        if (!$this->isGenderValid($data['gender'])) {
+            throw new InvalidGenderException();
         }
 
         return $this->professorRepository->create($data);
@@ -140,6 +146,18 @@ class ProfessorService
         }
 
         $this->professorRepository->delete($professor->id);
+    }
+
+    private function isGenderValid($gender) : bool {
+        $genderOptions = Gender::cases();
+
+        foreach ($genderOptions as $genderOption) {
+            if ($genderOption->value === $gender) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }
