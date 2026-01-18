@@ -29,4 +29,5 @@ Route::prefix('courses')->name('courses.')->group(function () {
     Route::get('/{id}', [CourseController::class, 'show']);
     Route::delete('/{id}', [CourseController::class, 'destroy']);
     Route::patch('/{id}', [CourseController::class, 'update']);
+    Route::post('/{id}/students', [CourseController::class, 'enrollStudent']);
 });

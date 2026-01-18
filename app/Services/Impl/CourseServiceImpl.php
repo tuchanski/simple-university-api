@@ -2,8 +2,13 @@
 
 namespace App\Services\Impl;
 
+use App\Exceptions\CourseNotFoundException;
+use App\Exceptions\EntityNotFoundException;
+use App\Exceptions\StudentAlreadyEnrolledException;
+use App\Exceptions\StudentNotFoundException;
 use App\Models\Course;
 use App\Models\Professor;
+use App\Models\Student;
 use App\Repositories\Impl\CourseRepository;
 use App\Services\CourseService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -71,5 +76,26 @@ class CourseServiceImpl implements CourseService
         }
 
         $this->courseRepository->delete($id);
+    }
+
+    public function enrollStudent(int $courseId, array $data): void
+    {
+        $course = $this->getCourseById($courseId);
+
+        if (is_null($course)) {
+            throw new CourseNotFoundException();
+        }
+
+        $student = Student::query()->find($data['student_id']);
+
+        if (is_null($student)) {
+            throw new StudentNotFoundException();
+        }
+
+        if ($course->students()->where('student_id', $student->id)->exists()) {
+            throw new StudentAlreadyEnrolledException();
+        }
+
+        $student->courses()->attach($course);
     }
 }

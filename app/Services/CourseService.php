@@ -16,4 +16,6 @@ interface CourseService
     public function updateCourseById(int $id, array $data): Course;
 
     public function deleteCourseById(int $id): void;
+
+    public function enrollStudent(int $courseId, array $data): void;
 }
