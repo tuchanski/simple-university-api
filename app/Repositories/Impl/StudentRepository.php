@@ -46,4 +46,9 @@ class StudentRepository implements BaseRepositoryInterface
     {
         return Student::query()->count();
     }
+
+    public function existsByEmail(string $email): bool
+    {
+        return Student::query()->where('email', $email)->exists();
+    }
 }

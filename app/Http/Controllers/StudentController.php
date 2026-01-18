@@ -2,46 +2,46 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\CpfAlreadyRegisteredException;
 use App\Exceptions\EmailAlreadyRegisteredException;
+use App\Exceptions\EntityNotFoundException;
 use App\Exceptions\InvalidEmailException;
 use App\Exceptions\InvalidGenderException;
-use App\Exceptions\EntityNotFoundException;
 use App\Helpers\GlobalExceptionHandler;
-use App\Services\Impl\ProfessorServiceImpl;
+use App\Models\Student;
+use App\Services\Impl\StudentServiceImpl;
 use Illuminate\Http\Request;
 
-class ProfessorController extends Controller
+class StudentController extends Controller
 {
 
-    private ProfessorServiceImpl $professorService;
+    private StudentServiceImpl $studentService;
 
     public function __construct() {
-        $this->professorService = new ProfessorServiceImpl();
+        $this->studentService = new StudentServiceImpl();
+    }
+
+    public function index()
+    {
+        return response($this->studentService->getAllStudents(), 200);
     }
 
     public function store(Request $request)
     {
         try
         {
-            return response($this->professorService->createProfessor($request->all()), 201);
+            return response($this->studentService->createStudent($request->all()), 201);
         }
-        catch (EmailAlreadyRegisteredException|CpfAlreadyRegisteredException|InvalidGenderException|InvalidEmailException $exception)
+        catch (EmailAlreadyRegisteredException|InvalidEmailException|InvalidGenderException $exception)
         {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
-    }
-
-    public function index()
-    {
-        return response($this->professorService->getAllProfessors(), 200);
     }
 
     public function show(int $id)
     {
         try
         {
-            return response($this->professorService->getProfessorById($id), 200);
+            return response($this->studentService->getStudentById($id), 200);
         }
         catch (EntityNotFoundException $exception)
         {
@@ -53,20 +53,20 @@ class ProfessorController extends Controller
     {
         try
         {
-            return response($this->professorService->updateProfessorById($id, $request->all()), 200);
+            return $this->studentService->updateStudentById($id, $request->all());
         }
-        catch (CpfAlreadyRegisteredException|EmailAlreadyRegisteredException|EntityNotFoundException $exception)
-        {
+        catch (EmailAlreadyRegisteredException|EntityNotFoundException|InvalidEmailException|InvalidGenderException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
+
     }
 
     public function destroy(int $id)
     {
         try
         {
-            $this->professorService->deleteProfessorById($id);
-            return response(null, 200);
+            $this->studentService->deleteStudentById($id);
+            return response(null, 204);
         }
         catch (EntityNotFoundException $exception)
         {
