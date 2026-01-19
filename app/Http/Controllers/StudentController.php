@@ -3,12 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\EmailAlreadyRegisteredException;
-use App\Exceptions\EntityNotFoundException;
 use App\Exceptions\InvalidEmailException;
 use App\Exceptions\InvalidGenderException;
 use App\Exceptions\StudentNotFoundException;
 use App\Helpers\GlobalExceptionHandler;
-use App\Models\Student;
 use App\Services\Impl\StudentServiceImpl;
 use Illuminate\Http\Request;
 

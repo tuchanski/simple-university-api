@@ -3,7 +3,6 @@
 namespace App\Services\Impl;
 
 use App\Exceptions\EmailAlreadyRegisteredException;
-use App\Exceptions\EntityNotFoundException;
 use App\Exceptions\InvalidEmailException;
 use App\Exceptions\InvalidGenderException;
 use App\Exceptions\StudentNotFoundException;

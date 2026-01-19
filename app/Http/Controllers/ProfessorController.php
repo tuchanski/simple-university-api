@@ -6,7 +6,6 @@ use App\Exceptions\CpfAlreadyRegisteredException;
 use App\Exceptions\EmailAlreadyRegisteredException;
 use App\Exceptions\InvalidEmailException;
 use App\Exceptions\InvalidGenderException;
-use App\Exceptions\EntityNotFoundException;
 use App\Exceptions\ProfessorNotFoundException;
 use App\Helpers\GlobalExceptionHandler;
 use App\Services\Impl\ProfessorServiceImpl;
