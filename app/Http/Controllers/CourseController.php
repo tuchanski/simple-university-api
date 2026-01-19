@@ -6,6 +6,8 @@ use App\Exceptions\CourseNotFoundException;
 use App\Exceptions\InvalidLangException;
 use App\Exceptions\InvalidLevelException;
 use App\Exceptions\InvalidStatusException;
+use App\Exceptions\ProfessorAlreadyEnrolledException;
+use App\Exceptions\ProfessorNotEnrolledException;
 use App\Exceptions\ProfessorNotFoundException;
 use App\Exceptions\StudentAlreadyEnrolledException;
 use App\Exceptions\StudentNotEnrolledException;
@@ -89,6 +91,24 @@ class CourseController extends Controller
             return response($this->courseService->getEnrolledStudents($id), 200);
         }
         catch (CourseNotFoundException $exception) {
+            return GlobalExceptionHandler::retrieveResponse($exception);
+        }
+    }
+
+    public function enrollProfessor(int $id, Request $request) {
+        try {
+            $this->courseService->enrollProfessor($id, $request->all());
+            return response(null, 204);
+        } catch (CourseNotFoundException|ProfessorNotFoundException|ProfessorNotFoundException|ProfessorAlreadyEnrolledException $exception) {
+            return GlobalExceptionHandler::retrieveResponse($exception);
+        }
+    }
+
+    public function destroyEnrollProfessor(int $id) {
+        try {
+            $this->courseService->unenrollProfessor($id);
+            return response(null, 204);
+        } catch (CourseNotFoundException|ProfessorNotEnrolledException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }

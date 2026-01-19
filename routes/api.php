@@ -29,7 +29,13 @@ Route::prefix('courses')->name('courses.')->group(function () {
     Route::delete('/{id}', [CourseController::class, 'destroy']);
     Route::patch('/{id}', [CourseController::class, 'update']);
     // Pivot table ops
+
+    //Student
     Route::post('/{id}/students', [CourseController::class, 'enrollStudent']);
     Route::delete('/{id}/students', [CourseController::class, 'destroyEnrollStudent']);
     Route::get('/{id}/students', [CourseController::class, 'getEnrolledStudents']);
+
+    //Professor
+    Route::post('/{id}/professor', [CourseController::class, 'enrollProfessor']);
+    Route::delete('/{id}/professor', [CourseController::class, 'destroyEnrollProfessor']);
 });

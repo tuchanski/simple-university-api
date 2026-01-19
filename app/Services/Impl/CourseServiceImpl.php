@@ -3,38 +3,42 @@
 namespace App\Services\Impl;
 
 use App\Exceptions\CourseNotFoundException;
-use App\Exceptions\EntityNotFoundException;
 use App\Exceptions\InvalidLangException;
 use App\Exceptions\InvalidLevelException;
 use App\Exceptions\InvalidStatusException;
+use App\Exceptions\ProfessorAlreadyEnrolledException;
+use App\Exceptions\ProfessorNotEnrolledException;
 use App\Exceptions\ProfessorNotFoundException;
 use App\Exceptions\StudentAlreadyEnrolledException;
 use App\Exceptions\StudentNotEnrolledException;
 use App\Exceptions\StudentNotFoundException;
 use App\Helpers\Utilities;
 use App\Models\Course;
-use App\Models\Professor;
-use App\Models\Student;
 use App\Repositories\Impl\CourseRepository;
+use App\Repositories\Impl\ProfessorRepository;
+use App\Repositories\Impl\StudentRepository;
 use App\Services\CourseService;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 
 class CourseServiceImpl implements CourseService
 {
 
     private CourseRepository $courseRepository;
+    private ProfessorRepository $professorRepository;
+    private StudentRepository $studentRepository;
 
     public function __construct()
     {
         $this->courseRepository = new CourseRepository();
+        $this->professorRepository = new ProfessorRepository();
+        $this->studentRepository = new StudentRepository();
     }
 
     public function createCourse(array $data): Course
     {
 
         if (array_key_exists('professor_id', $data)) {
-            $professor = Professor::query()->find($data['professor_id']);
+            $professor = $this->professorRepository->findById($data['professor_id']);
 
             if (is_null($professor)) {
                 throw new ProfessorNotFoundException();
@@ -80,7 +84,7 @@ class CourseServiceImpl implements CourseService
 
     public function updateCourseById(int $id, array $data): Course
     {
-        $course = $this->getCourseById($id);
+        $course = $this->courseRepository->findById($id);
 
         if (is_null($course)) {
             throw new CourseNotFoundException();
@@ -104,13 +108,13 @@ class CourseServiceImpl implements CourseService
 
     public function enrollStudent(int $courseId, array $data): void
     {
-        $course = $this->getCourseById($courseId);
+        $course = $this->courseRepository->findById($courseId);
 
         if (is_null($course)) {
             throw new CourseNotFoundException();
         }
 
-        $student = Student::query()->find($data['student_id']);
+        $student = $this->studentRepository->findById($data['student_id']);
 
         if (is_null($student)) {
             throw new StudentNotFoundException();
@@ -124,13 +128,13 @@ class CourseServiceImpl implements CourseService
     }
 
     public function unenrollStudent(int $courseId, array $data): void {
-        $course = $this->getCourseById($courseId);
+        $course = $this->courseRepository->findById($courseId);
 
         if (is_null($course)) {
             throw new CourseNotFoundException();
         }
 
-        $student = Student::query()->find($data['student_id']);
+        $student = $this->studentRepository->findById($data['student_id']);
 
         if (is_null($student)) {
             throw new StudentNotFoundException();
@@ -144,7 +148,7 @@ class CourseServiceImpl implements CourseService
     }
 
     public function getEnrolledStudents(int $courseId): Collection {
-        $course = $this->getCourseById($courseId);
+        $course = $this->courseRepository->findById($courseId);
 
         if (is_null($course)) {
             throw new CourseNotFoundException();
@@ -152,4 +156,42 @@ class CourseServiceImpl implements CourseService
 
         return $course->students()->getResults();
     }
+
+    public function enrollProfessor(int $courseId, array $data): void {
+        $course = $this->courseRepository->findById($courseId);
+
+        if (is_null($course)) {
+            throw new CourseNotFoundException();
+        }
+
+        $professor = $this->professorRepository->findById($data['professor_id']);
+
+        if (is_null($professor)) {
+            throw new ProfessorNotFoundException();
+        }
+
+        if ($course->professor()->exists()) {
+            throw new ProfessorAlreadyEnrolledException();
+        }
+
+        $course->professor()->associate($professor);
+        $course->save();
+    }
+
+    public function unenrollProfessor(int $courseId): void
+    {
+        $course = $this->courseRepository->findById($courseId);
+
+        if (is_null($course)) {
+            throw new CourseNotFoundException();
+        }
+
+        if (is_null($course->professor)) {
+            throw new ProfessorNotEnrolledException();
+        }
+
+        $course->professor()->dissociate();
+        $course->save();
+    }
+
 }
