@@ -7,6 +7,7 @@ use App\Exceptions\EmailAlreadyRegisteredException;
 use App\Exceptions\InvalidEmailException;
 use App\Exceptions\InvalidGenderException;
 use App\Exceptions\EntityNotFoundException;
+use App\Exceptions\ProfessorNotFoundException;
 use App\Helpers\Utilities;
 use App\Models\Professor;
 use App\Repositories\Impl\ProfessorRepository;
@@ -56,7 +57,7 @@ class ProfessorServiceImpl implements ProfessorService
         $professor =  $this->professorRepository->findById($id);
 
         if (is_null($professor)) {
-            throw new EntityNotFoundException();
+            throw new ProfessorNotFoundException();
         }
 
         return $professor;
@@ -67,7 +68,7 @@ class ProfessorServiceImpl implements ProfessorService
         $professor = $this->professorRepository->findById($id);
 
         if (is_null($professor)) {
-            throw new EntityNotFoundException();
+            throw new ProfessorNotFoundException();
         }
 
         if (
@@ -148,7 +149,7 @@ class ProfessorServiceImpl implements ProfessorService
         $professor = $this->professorRepository->findById($id);
 
         if (is_null($professor)) {
-            throw new EntityNotFoundException();
+            throw new ProfessorNotFoundException();
         }
 
         $this->professorRepository->delete($professor->id);

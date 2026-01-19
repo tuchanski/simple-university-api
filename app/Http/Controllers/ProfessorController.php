@@ -7,6 +7,7 @@ use App\Exceptions\EmailAlreadyRegisteredException;
 use App\Exceptions\InvalidEmailException;
 use App\Exceptions\InvalidGenderException;
 use App\Exceptions\EntityNotFoundException;
+use App\Exceptions\ProfessorNotFoundException;
 use App\Helpers\GlobalExceptionHandler;
 use App\Services\Impl\ProfessorServiceImpl;
 use Illuminate\Http\Request;
@@ -43,7 +44,7 @@ class ProfessorController extends Controller
         {
             return response($this->professorService->getProfessorById($id), 200);
         }
-        catch (EntityNotFoundException $exception)
+        catch (ProfessorNotFoundException $exception)
         {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
@@ -55,7 +56,7 @@ class ProfessorController extends Controller
         {
             return response($this->professorService->updateProfessorById($id, $request->all()), 200);
         }
-        catch (CpfAlreadyRegisteredException|EmailAlreadyRegisteredException|EntityNotFoundException $exception)
+        catch (CpfAlreadyRegisteredException|EmailAlreadyRegisteredException|ProfessorNotFoundException $exception)
         {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
@@ -68,7 +69,7 @@ class ProfessorController extends Controller
             $this->professorService->deleteProfessorById($id);
             return response(null, 200);
         }
-        catch (EntityNotFoundException $exception)
+        catch (ProfessorNotFoundException $exception)
         {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
