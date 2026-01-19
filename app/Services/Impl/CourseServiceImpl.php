@@ -4,10 +4,14 @@ namespace App\Services\Impl;
 
 use App\Exceptions\CourseNotFoundException;
 use App\Exceptions\EntityNotFoundException;
+use App\Exceptions\InvalidLangException;
+use App\Exceptions\InvalidLevelException;
+use App\Exceptions\InvalidStatusException;
 use App\Exceptions\ProfessorNotFoundException;
 use App\Exceptions\StudentAlreadyEnrolledException;
 use App\Exceptions\StudentNotEnrolledException;
 use App\Exceptions\StudentNotFoundException;
+use App\Helpers\Utilities;
 use App\Models\Course;
 use App\Models\Professor;
 use App\Models\Student;
@@ -34,6 +38,24 @@ class CourseServiceImpl implements CourseService
 
             if (is_null($professor)) {
                 throw new ProfessorNotFoundException();
+            }
+        }
+
+        if (array_key_exists('level', $data)) {
+            if (!Utilities::isLevelValid($data['level'])) {
+                throw new InvalidLevelException();
+            }
+        }
+
+        if (array_key_exists('status', $data)) {
+            if (!Utilities::isStatusValid($data['status'])) {
+                throw new InvalidStatusException();
+            }
+        }
+
+        if (array_key_exists('language', $data)) {
+            if (!Utilities::isLangValid($data['language'])) {
+                throw new InvalidLangException();
             }
         }
 

@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\CourseNotFoundException;
+use App\Exceptions\InvalidLangException;
+use App\Exceptions\InvalidLevelException;
+use App\Exceptions\InvalidStatusException;
 use App\Exceptions\ProfessorNotFoundException;
 use App\Exceptions\StudentAlreadyEnrolledException;
 use App\Exceptions\StudentNotEnrolledException;
 use App\Exceptions\StudentNotFoundException;
 use App\Helpers\GlobalExceptionHandler;
-use App\Models\Course;
-use App\Services\CourseService;
 use App\Services\Impl\CourseServiceImpl;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller
@@ -32,7 +32,7 @@ class CourseController extends Controller
     {
         try {
             return response($this->courseService->createCourse($request->all()), 201);
-        } catch (ProfessorNotFoundException $exception) {
+        } catch (ProfessorNotFoundException|InvalidLevelException|InvalidStatusException|InvalidLangException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }
@@ -79,7 +79,7 @@ class CourseController extends Controller
             $this->courseService->unenrollStudent($id, $request->all());
             return response(null, 204);
         }
-        catch (CourseNotFoundException|StudentAlreadyEnrolledException|StudentNotFoundException|StudentNotEnrolledException $exception) {
+        catch (CourseNotFoundException|StudentNotFoundException|StudentNotEnrolledException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }
