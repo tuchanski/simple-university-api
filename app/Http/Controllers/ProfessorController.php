@@ -74,4 +74,12 @@ class ProfessorController extends Controller
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }
+
+    public function coursesIndex(int $id) {
+        try {
+            return response($this->professorService->getProfessorCourses($id), 201);
+        } catch (ProfessorNotFoundException $exception) {
+            return GlobalExceptionHandler::retrieveResponse($exception);
+        }
+    }
 }

@@ -155,4 +155,14 @@ class ProfessorServiceImpl implements ProfessorService
         $this->professorRepository->delete($professor->id);
     }
 
+    public function getProfessorCourses(int $professorId) : Collection {
+        $professor = $this->professorRepository->findById($professorId);
+
+        if (is_null($professor)) {
+            throw new ProfessorNotFoundException();
+        }
+
+        return $professor->courses()->get();
+    }
+
 }

@@ -12,6 +12,7 @@ Route::prefix('professors')->name('professors.')->group(function () {
     Route::get('/{id}', [ProfessorController::class, 'show']);
     Route::delete('/{id}', [ProfessorController::class, 'destroy']);
     Route::patch('/{id}', [ProfessorController::class, 'update']);
+    Route::get('/{id}/courses', [ProfessorController::class, 'coursesIndex']);
 });
 
 Route::prefix('students')->name('students.')->group(function () {
@@ -28,6 +29,7 @@ Route::prefix('courses')->name('courses.')->group(function () {
     Route::get('/{id}', [CourseController::class, 'show']);
     Route::delete('/{id}', [CourseController::class, 'destroy']);
     Route::patch('/{id}', [CourseController::class, 'update']);
+
     // Pivot table ops
 
     //Student
