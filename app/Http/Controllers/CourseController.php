@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\CourseNotFoundException;
+use App\Exceptions\ProfessorNotFoundException;
 use App\Exceptions\StudentAlreadyEnrolledException;
 use App\Exceptions\StudentNotEnrolledException;
 use App\Exceptions\StudentNotFoundException;
@@ -31,7 +32,7 @@ class CourseController extends Controller
     {
         try {
             return response($this->courseService->createCourse($request->all()), 201);
-        } catch (ModelNotFoundException $exception) {
+        } catch (ProfessorNotFoundException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }
@@ -40,7 +41,7 @@ class CourseController extends Controller
     {
         try {
             return response($this->courseService->getCourseById($id), 200);
-        } catch (ModelNotFoundException $exception) {
+        } catch (CourseNotFoundException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }
@@ -49,7 +50,7 @@ class CourseController extends Controller
     {
         try {
             return response($this->courseService->updateCourseById($id, $request->all()), 200);
-        } catch (ModelNotFoundException $exception) {
+        } catch (CourseNotFoundException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }
@@ -59,7 +60,7 @@ class CourseController extends Controller
         try {
             $this->courseService->deleteCourseById($id);
             return response(null, 204);
-        } catch (ModelNotFoundException $exception) {
+        } catch (CourseNotFoundException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }

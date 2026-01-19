@@ -4,6 +4,7 @@ namespace App\Services\Impl;
 
 use App\Exceptions\CourseNotFoundException;
 use App\Exceptions\EntityNotFoundException;
+use App\Exceptions\ProfessorNotFoundException;
 use App\Exceptions\StudentAlreadyEnrolledException;
 use App\Exceptions\StudentNotEnrolledException;
 use App\Exceptions\StudentNotFoundException;
@@ -32,7 +33,7 @@ class CourseServiceImpl implements CourseService
             $professor = Professor::query()->find($data['professor_id']);
 
             if (is_null($professor)) {
-                throw new ModelNotFoundException('Professor not found');
+                throw new ProfessorNotFoundException();
             }
         }
 
@@ -49,7 +50,7 @@ class CourseServiceImpl implements CourseService
         $course = $this->courseRepository->findById($id);
 
         if (is_null($course)) {
-            throw new ModelNotFoundException();
+            throw new CourseNotFoundException();
         }
 
         return $course;
@@ -60,7 +61,7 @@ class CourseServiceImpl implements CourseService
         $course = $this->getCourseById($id);
 
         if (is_null($course)) {
-            throw new ModelNotFoundException();
+            throw new CourseNotFoundException();
         }
 
         $course->update($data);
@@ -73,7 +74,7 @@ class CourseServiceImpl implements CourseService
         $course = $this->courseRepository->findById($id);
 
         if (is_null($course)) {
-            throw new ModelNotFoundException();
+            throw new CourseNotFoundException();
         }
 
         $this->courseRepository->delete($id);

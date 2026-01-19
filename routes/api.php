@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\CourseController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\ProfessorController;
@@ -29,6 +28,7 @@ Route::prefix('courses')->name('courses.')->group(function () {
     Route::get('/{id}', [CourseController::class, 'show']);
     Route::delete('/{id}', [CourseController::class, 'destroy']);
     Route::patch('/{id}', [CourseController::class, 'update']);
+    // Pivot table ops
     Route::post('/{id}/students', [CourseController::class, 'enrollStudent']);
     Route::delete('/{id}/students', [CourseController::class, 'destroyEnrollStudent']);
     Route::get('/{id}/students', [CourseController::class, 'getEnrolledStudents']);
