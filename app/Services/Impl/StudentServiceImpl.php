@@ -6,6 +6,7 @@ use App\Exceptions\EmailAlreadyRegisteredException;
 use App\Exceptions\EntityNotFoundException;
 use App\Exceptions\InvalidEmailException;
 use App\Exceptions\InvalidGenderException;
+use App\Exceptions\StudentNotFoundException;
 use App\Helpers\Utilities;
 use App\Models\Student;
 use App\Repositories\Impl\StudentRepository;
@@ -50,7 +51,7 @@ class StudentServiceImpl implements StudentService
         $student = $this->studentRepository->findById($id);
 
         if (is_null($student)) {
-            throw new EntityNotFoundException();
+            throw new StudentNotFoundException();
         }
 
         return $student;
@@ -61,7 +62,7 @@ class StudentServiceImpl implements StudentService
         $student = $this->studentRepository->findById($id);
 
         if (is_null($student)) {
-            throw new EntityNotFoundException();
+            throw new StudentNotFoundException();
         }
 
         if (array_key_exists('name', $data) &&
@@ -134,7 +135,7 @@ class StudentServiceImpl implements StudentService
         $student = $this->studentRepository->findById($id);
 
         if (is_null($student)) {
-            throw new EntityNotFoundException();
+            throw new StudentNotFoundException();
         }
 
         $student->delete();

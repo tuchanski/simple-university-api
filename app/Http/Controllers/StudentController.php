@@ -6,6 +6,7 @@ use App\Exceptions\EmailAlreadyRegisteredException;
 use App\Exceptions\EntityNotFoundException;
 use App\Exceptions\InvalidEmailException;
 use App\Exceptions\InvalidGenderException;
+use App\Exceptions\StudentNotFoundException;
 use App\Helpers\GlobalExceptionHandler;
 use App\Models\Student;
 use App\Services\Impl\StudentServiceImpl;
@@ -43,7 +44,7 @@ class StudentController extends Controller
         {
             return response($this->studentService->getStudentById($id), 200);
         }
-        catch (EntityNotFoundException $exception)
+        catch (StudentNotFoundException $exception)
         {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
@@ -55,7 +56,7 @@ class StudentController extends Controller
         {
             return $this->studentService->updateStudentById($id, $request->all());
         }
-        catch (EmailAlreadyRegisteredException|EntityNotFoundException|InvalidEmailException|InvalidGenderException $exception) {
+        catch (EmailAlreadyRegisteredException|StudentNotFoundException|InvalidEmailException|InvalidGenderException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
 
@@ -68,7 +69,7 @@ class StudentController extends Controller
             $this->studentService->deleteStudentById($id);
             return response(null, 204);
         }
-        catch (EntityNotFoundException $exception)
+        catch (StudentNotFoundException $exception)
         {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
