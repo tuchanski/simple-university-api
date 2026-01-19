@@ -67,7 +67,7 @@ class ProfessorController extends Controller
         try
         {
             $this->professorService->deleteProfessorById($id);
-            return response(null, 200);
+            return response(null, 204);
         }
         catch (ProfessorNotFoundException $exception)
         {
@@ -77,7 +77,7 @@ class ProfessorController extends Controller
 
     public function coursesIndex(int $id) {
         try {
-            return response($this->professorService->getProfessorCourses($id), 201);
+            return response($this->professorService->getProfessorCourses($id), 200);
         } catch (ProfessorNotFoundException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }

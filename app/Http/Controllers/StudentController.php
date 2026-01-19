@@ -54,7 +54,7 @@ class StudentController extends Controller
     {
         try
         {
-            return $this->studentService->updateStudentById($id, $request->all());
+            return response($this->studentService->updateStudentById($id, $request->all()), 200);
         }
         catch (EmailAlreadyRegisteredException|StudentNotFoundException|InvalidEmailException|InvalidGenderException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);

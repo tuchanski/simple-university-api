@@ -99,7 +99,7 @@ class CourseController extends Controller
         try {
             $this->courseService->enrollProfessor($id, $request->all());
             return response(null, 204);
-        } catch (CourseNotFoundException|ProfessorNotFoundException|ProfessorNotFoundException|ProfessorAlreadyEnrolledException $exception) {
+        } catch (CourseNotFoundException|ProfessorNotFoundException|ProfessorAlreadyEnrolledException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }
