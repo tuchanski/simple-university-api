@@ -6,6 +6,7 @@ use App\Enums\Gender;
 use App\Enums\Language;
 use App\Enums\Level;
 use App\Enums\Status;
+use PHPOpenSourceSaver\JWTAuth\Contracts\Providers\Auth;
 
 class Utilities
 {
@@ -63,4 +64,9 @@ class Utilities
 
         return false;
     }
+
+    public static function isAuthUserAdmin() : bool {
+        return auth()->user()->is_admin;
+    }
+
 }
