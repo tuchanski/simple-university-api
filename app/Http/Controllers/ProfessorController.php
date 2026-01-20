@@ -8,6 +8,7 @@ use App\Exceptions\InvalidEmailException;
 use App\Exceptions\InvalidGenderException;
 use App\Exceptions\ProfessorNotFoundException;
 use App\Helpers\GlobalExceptionHandler;
+use App\Helpers\Utilities;
 use App\Services\Impl\ProfessorServiceImpl;
 use Illuminate\Http\Request;
 
@@ -22,6 +23,11 @@ class ProfessorController extends Controller
 
     public function store(Request $request)
     {
+
+        if (!Utilities::isAuthUserAdmin()) {
+            return response(['message' => 'Unauthorized'], 401);
+        }
+
         try
         {
             return response($this->professorService->createProfessor($request->all()), 201);
@@ -51,6 +57,11 @@ class ProfessorController extends Controller
 
     public function update(int $id, Request $request)
     {
+
+        if (!Utilities::isAuthUserAdmin()) {
+            return response(['message' => 'Unauthorized'], 401);
+        }
+
         try
         {
             return response($this->professorService->updateProfessorById($id, $request->all()), 200);
@@ -63,6 +74,11 @@ class ProfessorController extends Controller
 
     public function destroy(int $id)
     {
+
+        if (!Utilities::isAuthUserAdmin()) {
+            return response(['message' => 'Unauthorized'], 401);
+        }
+
         try
         {
             $this->professorService->deleteProfessorById($id);

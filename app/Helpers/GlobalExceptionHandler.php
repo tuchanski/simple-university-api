@@ -14,4 +14,5 @@ class GlobalExceptionHandler
         return response(['message' => $exception->getMessage()], $exception->getCode());
     }
 
+
 }

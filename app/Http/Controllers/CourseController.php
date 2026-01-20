@@ -13,6 +13,7 @@ use App\Exceptions\StudentAlreadyEnrolledException;
 use App\Exceptions\StudentNotEnrolledException;
 use App\Exceptions\StudentNotFoundException;
 use App\Helpers\GlobalExceptionHandler;
+use App\Helpers\Utilities;
 use App\Services\Impl\CourseServiceImpl;
 use Illuminate\Http\Request;
 
@@ -32,6 +33,11 @@ class CourseController extends Controller
 
     public function store(Request $request)
     {
+
+        if (!Utilities::isAuthUserAdmin()) {
+            return response(['message' => 'Unauthorized'], 401);
+        }
+
         try {
             return response($this->courseService->createCourse($request->all()), 201);
         } catch (ProfessorNotFoundException|InvalidLevelException|InvalidStatusException|InvalidLangException $exception) {
@@ -50,6 +56,10 @@ class CourseController extends Controller
 
     public function update(int $id, Request $request)
     {
+        if (!Utilities::isAuthUserAdmin()) {
+            return response(['message' => 'Unauthorized'], 401);
+        }
+
         try {
             return response($this->courseService->updateCourseById($id, $request->all()), 200);
         } catch (CourseNotFoundException $exception) {
@@ -59,6 +69,10 @@ class CourseController extends Controller
 
     public function destroy(int $id)
     {
+        if (!Utilities::isAuthUserAdmin()) {
+            return response(['message' => 'Unauthorized'], 401);
+        }
+
         try {
             $this->courseService->deleteCourseById($id);
             return response(null, 204);
@@ -68,6 +82,11 @@ class CourseController extends Controller
     }
 
     public function enrollStudent(int $id, Request $request) {
+
+        if (!Utilities::isAuthUserAdmin()) {
+            return response(['message' => 'Unauthorized'], 401);
+        }
+
         try {
             $this->courseService->enrollStudent($id, $request->all());
             return response(['message' => 'Student enrolled successfully'], 201);
@@ -77,6 +96,11 @@ class CourseController extends Controller
     }
 
     public function destroyEnrollStudent(int $id, Request $request) {
+
+        if (!Utilities::isAuthUserAdmin()) {
+            return response(['message' => 'Unauthorized'], 401);
+        }
+
         try {
             $this->courseService->unenrollStudent($id, $request->all());
             return response(null, 204);
@@ -96,6 +120,11 @@ class CourseController extends Controller
     }
 
     public function enrollProfessor(int $id, Request $request) {
+
+        if (!Utilities::isAuthUserAdmin()) {
+            return response(['message' => 'Unauthorized'], 401);
+        }
+
         try {
             $this->courseService->enrollProfessor($id, $request->all());
             return response(null, 204);
@@ -105,6 +134,11 @@ class CourseController extends Controller
     }
 
     public function destroyEnrollProfessor(int $id) {
+
+        if (!Utilities::isAuthUserAdmin()) {
+            return response(['message' => 'Unauthorized'], 401);
+        }
+
         try {
             $this->courseService->unenrollProfessor($id);
             return response(null, 204);
