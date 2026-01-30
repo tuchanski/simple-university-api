@@ -10,6 +10,7 @@ use App\Exceptions\StudentNotFoundException;
 use App\Helpers\GlobalExceptionHandler;
 use App\Helpers\Utilities;
 use App\Services\Impl\StudentServiceImpl;
+use App\Services\StudentService;
 use Dedoc\Scramble\Attributes\PathParameter;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -17,10 +18,10 @@ use Illuminate\Validation\Rule;
 class StudentController extends Controller
 {
 
-    private StudentServiceImpl $studentService;
+    private StudentService $studentService;
 
-    public function __construct() {
-        $this->studentService = new StudentServiceImpl();
+    public function __construct(StudentServiceImpl $studentService) {
+        $this->studentService = $studentService;
     }
 
     /**
