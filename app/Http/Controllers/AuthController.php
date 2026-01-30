@@ -15,7 +15,7 @@ class AuthController extends Controller
      * Register
      *
      * Through this route, it is possible to persist a new user in the system.
-     *
+     * @unauthenticated
      * @return \Illuminate\Http\JsonResponse
      */
     public function register(Request $request) {
@@ -45,6 +45,7 @@ class AuthController extends Controller
      *
      * Through this route, it is possible to get a JWT via given credentials.
      *
+     * @unauthenticated
      * @return \Illuminate\Http\JsonResponse
      */
     public function login()
