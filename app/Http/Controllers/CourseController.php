@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Language;
+use App\Enums\Level;
+use App\Enums\Status;
 use App\Exceptions\CourseNotFoundException;
 use App\Exceptions\InvalidLangException;
 use App\Exceptions\InvalidLevelException;
@@ -14,29 +17,59 @@ use App\Exceptions\StudentNotEnrolledException;
 use App\Exceptions\StudentNotFoundException;
 use App\Helpers\GlobalExceptionHandler;
 use App\Helpers\Utilities;
+use App\Services\CourseService;
 use App\Services\Impl\CourseServiceImpl;
+use Dedoc\Scramble\Attributes\PathParameter;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CourseController extends Controller
 {
 
-    private CourseServiceImpl $courseService;
+    private CourseService $courseService;
 
-    public function __construct() {
-        $this->courseService = new CourseServiceImpl();
+    public function __construct(CourseServiceImpl $courseService) {
+        $this->courseService = $courseService;
     }
 
+    /**
+     * Get All
+     *
+     * Through this route, it is possible to retrieve all courses registered in the system.
+     *
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
     public function index()
     {
         return response($this->courseService->getAllCourses(), 200);
     }
 
+    /**
+     * Create
+     *
+     * Through this route, it is possible to persist a new course in the system.
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     *
+     */
     public function store(Request $request)
     {
 
         if (!Utilities::isAuthUserAdmin()) {
             return response(['message' => 'Unauthorized'], 401);
         }
+
+        $request->validate([
+            'title' => ['required', 'string'],
+            'description' => ['required', 'string'],
+            'language' => [Rule::in(Language::cases()), 'required'],
+            'level' => [Rule::in(Level::cases()), 'required'],
+            'status' => [Rule::in(Status::cases()), 'required'],
+            'start_date' => ['required', 'date'],
+            'end_date' => 'date',
+            'professor_id' => ['integer', 'exists:professors,id'],
+        ]);
 
         try {
             return response($this->courseService->createCourse($request->all()), 201);
@@ -45,6 +78,15 @@ class CourseController extends Controller
         }
     }
 
+    /**
+     * Get by ID
+     *
+     * Through this route, it is possible to retrieve a course registered in the system by its ID.
+     *
+     * @param int $id
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    #[PathParameter('id', description: 'The ID of the course being shown', type: 'integer', example: '1')]
     public function show(int $id)
     {
         try {
@@ -54,11 +96,30 @@ class CourseController extends Controller
         }
     }
 
+    /**
+     * Update
+     *
+     * Through this route, it is possible to update an existing course by its ID, providing the target fields via body request.
+     * @param int $id
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    #[PathParameter('id', description: 'The ID of the course being updated', type: 'integer', example: '1')]
     public function update(int $id, Request $request)
     {
         if (!Utilities::isAuthUserAdmin()) {
             return response(['message' => 'Unauthorized'], 401);
         }
+
+        $request->validate([
+            'title' => 'string',
+            'description' => 'string',
+            'language' => Rule::in(Language::cases()),
+            'level' => Rule::in(Level::cases()),
+            'status' => Rule::in(Status::cases()),
+            'start_date' => 'date',
+            'end_date' => 'date',
+        ]);
 
         try {
             return response($this->courseService->updateCourseById($id, $request->all()), 200);
@@ -67,6 +128,15 @@ class CourseController extends Controller
         }
     }
 
+    /**
+     * Delete
+     *
+     * Through this route, it is possible to delete a course by its ID.
+     *
+     * @param int $id
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    #[PathParameter('id', description: 'The ID of the course being deleted', type: 'integer', example: '1')]
     public function destroy(int $id)
     {
         if (!Utilities::isAuthUserAdmin()) {
@@ -81,11 +151,25 @@ class CourseController extends Controller
         }
     }
 
+    /**
+     * Enroll a Student
+     *
+     * Through this route, it is possible to enroll a student to an existing course.
+     *
+     * @param int $id
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    #[PathParameter('id', description: 'The ID of the targeted course', type: 'integer', example: '1')]
     public function enrollStudent(int $id, Request $request) {
 
         if (!Utilities::isAuthUserAdmin()) {
             return response(['message' => 'Unauthorized'], 401);
         }
+
+        $request->validate([
+            'student_id' => ['required', 'integer', 'exists:students,id'],
+        ]);
 
         try {
             $this->courseService->enrollStudent($id, $request->all());
@@ -95,35 +179,70 @@ class CourseController extends Controller
         }
     }
 
+    /**
+     * Unenroll a Student
+     *
+     * Through this route, it is possible to unenroll a student from an existing course.
+     *
+     * @param int $id
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    #[PathParameter('id', description: 'The ID of the targeted course', type: 'integer', example: '1')]
     public function destroyEnrollStudent(int $id, Request $request) {
 
         if (!Utilities::isAuthUserAdmin()) {
             return response(['message' => 'Unauthorized'], 401);
         }
 
+        $request->validate([
+            'student_id' => ['required', 'integer', 'exists:students,id'],
+        ]);
+
         try {
             $this->courseService->unenrollStudent($id, $request->all());
             return response(null, 204);
-        }
-        catch (CourseNotFoundException|StudentNotFoundException|StudentNotEnrolledException $exception) {
+        } catch (CourseNotFoundException|StudentNotFoundException|StudentNotEnrolledException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }
 
+    /**
+     * Get All Enrolled Students
+     *
+     * Through this route, it is possible to retrieve all enrolled students from an existing course.
+     *
+     * @param int $id
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    #[PathParameter('id', description: 'The ID of the targeted course', type: 'integer', example: '1')]
     public function getEnrolledStudents(int $id) {
         try {
             return response($this->courseService->getEnrolledStudents($id), 200);
-        }
-        catch (CourseNotFoundException $exception) {
+        } catch (CourseNotFoundException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }
 
+    /**
+     * Enroll Professor
+     *
+     * Through this route, it is possible to enroll a professor to an existing course.
+     *
+     * @param int $id
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    #[PathParameter('id', description: 'The ID of the targeted course', type: 'integer', example: '1')]
     public function enrollProfessor(int $id, Request $request) {
 
         if (!Utilities::isAuthUserAdmin()) {
             return response(['message' => 'Unauthorized'], 401);
         }
+
+        $request->validate([
+            'professor_id' => ['required', 'integer', 'exists:professors,id'],
+        ]);
 
         try {
             $this->courseService->enrollProfessor($id, $request->all());
@@ -133,6 +252,15 @@ class CourseController extends Controller
         }
     }
 
+    /**
+     * Unenroll Professor
+     *
+     * Through this route, it is possible to unenroll a professor that is enrolled to an existing course.
+     *
+     * @param int $id
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    #[PathParameter('id', description: 'The ID of the targeted course', type: 'integer', example: '1')]
     public function destroyEnrollProfessor(int $id) {
 
         if (!Utilities::isAuthUserAdmin()) {

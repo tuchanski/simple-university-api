@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Validator;
 
 
@@ -11,12 +12,15 @@ class AuthController extends Controller
 {
 
     /**
-     * Register a User.
+     * Register
      *
+     * Through this route, it is possible to persist a new user in the system.
+     * @unauthenticated
      * @return \Illuminate\Http\JsonResponse
      */
-    public function register() {
-        $validator = Validator::make(request()->all(), [
+    public function register(Request $request) {
+
+        $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required|confirmed|min:8',
@@ -37,15 +41,18 @@ class AuthController extends Controller
 
 
     /**
-     * Get a JWT via given credentials.
+     * Login
      *
+     * Through this route, it is possible to get a JWT via given credentials.
+     *
+     * @unauthenticated
      * @return \Illuminate\Http\JsonResponse
      */
     public function login()
     {
         $credentials = request(['email', 'password']);
 
-        if (! $token = auth()->attempt($credentials)) {
+        if (!$token = auth()->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
@@ -53,7 +60,9 @@ class AuthController extends Controller
     }
 
     /**
-     * Get the authenticated User.
+     * Me
+     *
+     * Through this route, it is possible to get info about the authenticated user.
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -63,7 +72,9 @@ class AuthController extends Controller
     }
 
     /**
-     * Log the user out (Invalidate the token).
+     * Logout
+     *
+     * Through this route, it is possible to invalidate the JWT.
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -75,7 +86,9 @@ class AuthController extends Controller
     }
 
     /**
-     * Refresh a token.
+     * Refresh
+     *
+     * Through this route, it is possible to refresh the JWT.
      *
      * @return \Illuminate\Http\JsonResponse
      */
