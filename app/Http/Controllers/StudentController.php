@@ -10,6 +10,7 @@ use App\Exceptions\StudentNotFoundException;
 use App\Helpers\GlobalExceptionHandler;
 use App\Helpers\Utilities;
 use App\Services\Impl\StudentServiceImpl;
+use Dedoc\Scramble\Attributes\PathParameter;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -75,6 +76,7 @@ class StudentController extends Controller
      * @param int $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
+    #[PathParameter('id', description: 'The ID of the student being shown', type: 'integer', example: '1')]
     public function show(int $id)
     {
         try
@@ -96,6 +98,7 @@ class StudentController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
+    #[PathParameter('id', description: 'The ID of the student being updated', type: 'integer', example: '1')]
     public function update(int $id, Request $request)
     {
 
@@ -129,6 +132,7 @@ class StudentController extends Controller
      * @param int $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
+    #[PathParameter('id', description: 'The ID of the student being deleted', type: 'integer', example: '1')]
     public function destroy(int $id)
     {
 

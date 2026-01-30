@@ -10,26 +10,27 @@ use App\Exceptions\ProfessorNotFoundException;
 use App\Helpers\GlobalExceptionHandler;
 use App\Helpers\Utilities;
 use App\Services\Impl\ProfessorServiceImpl;
+use App\Services\ProfessorService;
 use Dedoc\Scramble\Attributes\PathParameter;
 use Illuminate\Http\Request;
 
 class ProfessorController extends Controller
 {
 
-    private ProfessorServiceImpl $professorService;
+    private ProfessorService $professorService;
 
-    public function __construct() {
-        $this->professorService = new ProfessorServiceImpl();
+    public function __construct(ProfessorServiceImpl $professorService) {
+        $this->professorService = $professorService;
     }
 
     /**
      * Create
      *
      * Through this route, it is possible to persist a new professor, providing a valid body request.
+     *
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-
     public function store(Request $request)
     {
 
@@ -59,12 +60,10 @@ class ProfessorController extends Controller
      * Through this route, it is possible to retrieve all professors registered in the system.
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-
     public function index()
     {
         return response($this->professorService->getAllProfessors(), 200);
     }
-
 
     /**
      * Get by ID

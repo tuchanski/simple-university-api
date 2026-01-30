@@ -17,23 +17,26 @@ use App\Exceptions\StudentNotEnrolledException;
 use App\Exceptions\StudentNotFoundException;
 use App\Helpers\GlobalExceptionHandler;
 use App\Helpers\Utilities;
+use App\Services\CourseService;
 use App\Services\Impl\CourseServiceImpl;
+use Dedoc\Scramble\Attributes\PathParameter;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class CourseController extends Controller
 {
 
-    private CourseServiceImpl $courseService;
+    private CourseService $courseService;
 
-    public function __construct() {
-        $this->courseService = new CourseServiceImpl();
+    public function __construct(CourseServiceImpl $courseService) {
+        $this->courseService = $courseService;
     }
 
     /**
      * Get All
      *
      * Through this route, it is possible to retrieve all courses registered in the system.
+     *
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     public function index()
@@ -45,8 +48,10 @@ class CourseController extends Controller
      * Create
      *
      * Through this route, it is possible to persist a new course in the system.
+     *
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     *
      */
     public function store(Request $request)
     {
@@ -81,6 +86,7 @@ class CourseController extends Controller
      * @param int $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
+    #[PathParameter('id', description: 'The ID of the course being shown', type: 'integer', example: '1')]
     public function show(int $id)
     {
         try {
@@ -98,6 +104,7 @@ class CourseController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
+    #[PathParameter('id', description: 'The ID of the course being updated', type: 'integer', example: '1')]
     public function update(int $id, Request $request)
     {
         if (!Utilities::isAuthUserAdmin()) {
@@ -129,6 +136,7 @@ class CourseController extends Controller
      * @param int $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
+    #[PathParameter('id', description: 'The ID of the course being deleted', type: 'integer', example: '1')]
     public function destroy(int $id)
     {
         if (!Utilities::isAuthUserAdmin()) {
@@ -152,6 +160,7 @@ class CourseController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
+    #[PathParameter('id', description: 'The ID of the targeted course', type: 'integer', example: '1')]
     public function enrollStudent(int $id, Request $request) {
 
         if (!Utilities::isAuthUserAdmin()) {
@@ -179,6 +188,7 @@ class CourseController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
+    #[PathParameter('id', description: 'The ID of the targeted course', type: 'integer', example: '1')]
     public function destroyEnrollStudent(int $id, Request $request) {
 
         if (!Utilities::isAuthUserAdmin()) {
@@ -192,8 +202,7 @@ class CourseController extends Controller
         try {
             $this->courseService->unenrollStudent($id, $request->all());
             return response(null, 204);
-        }
-        catch (CourseNotFoundException|StudentNotFoundException|StudentNotEnrolledException $exception) {
+        } catch (CourseNotFoundException|StudentNotFoundException|StudentNotEnrolledException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }
@@ -206,11 +215,11 @@ class CourseController extends Controller
      * @param int $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
+    #[PathParameter('id', description: 'The ID of the targeted course', type: 'integer', example: '1')]
     public function getEnrolledStudents(int $id) {
         try {
             return response($this->courseService->getEnrolledStudents($id), 200);
-        }
-        catch (CourseNotFoundException $exception) {
+        } catch (CourseNotFoundException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }
@@ -224,6 +233,7 @@ class CourseController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
+    #[PathParameter('id', description: 'The ID of the targeted course', type: 'integer', example: '1')]
     public function enrollProfessor(int $id, Request $request) {
 
         if (!Utilities::isAuthUserAdmin()) {
@@ -250,6 +260,7 @@ class CourseController extends Controller
      * @param int $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
+    #[PathParameter('id', description: 'The ID of the targeted course', type: 'integer', example: '1')]
     public function destroyEnrollProfessor(int $id) {
 
         if (!Utilities::isAuthUserAdmin()) {
