@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Gender;
 use App\Exceptions\EmailAlreadyRegisteredException;
 use App\Exceptions\InvalidEmailException;
 use App\Exceptions\InvalidGenderException;
@@ -10,6 +11,7 @@ use App\Helpers\GlobalExceptionHandler;
 use App\Helpers\Utilities;
 use App\Services\Impl\StudentServiceImpl;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class StudentController extends Controller
 {
@@ -20,17 +22,40 @@ class StudentController extends Controller
         $this->studentService = new StudentServiceImpl();
     }
 
+    /**
+     * Get All
+     *
+     * Through this route, it is possible to retrieve all students registered in the system.
+     *
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
     public function index()
     {
         return response($this->studentService->getAllStudents(), 200);
     }
 
+    /**
+     * Create
+     *
+     * Through this route, it is possible to persist a new student in the system.
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
     public function store(Request $request)
     {
 
         if (!Utilities::isAuthUserAdmin()) {
             return response(['message' => 'Unauthorized'], 401);
         }
+
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:students',
+            'gender' => ['required', Rule::in(Gender::cases())],
+            'phone' => 'string|nullable',
+            'address' => 'required',
+        ]);
 
         try
         {
@@ -42,6 +67,14 @@ class StudentController extends Controller
         }
     }
 
+    /**
+     * Get by ID
+     *
+     * Through this route, it is possible to retrieve a student registered in the system by its ID.
+     *
+     * @param int $id
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
     public function show(int $id)
     {
         try
@@ -54,12 +87,29 @@ class StudentController extends Controller
         }
     }
 
+    /**
+     * Update
+     *
+     * Through this route, it is possible to update a student registered in the system by its id, providing the target params in the body request.
+     *
+     * @param int $id
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
     public function update(int $id, Request $request)
     {
 
         if (!Utilities::isAuthUserAdmin()) {
             return response(['message' => 'Unauthorized'], 401);
         }
+
+        $request->validate([
+            'name' => '',
+            'email' => '|email|unique:students',
+            'gender' => ['', Rule::in(Gender::cases())],
+            'phone' => 'string|nullable',
+            'address' => '',
+        ]);
 
         try
         {
@@ -71,6 +121,14 @@ class StudentController extends Controller
 
     }
 
+    /**
+     * Delete
+     *
+     * Through this route, it is possible to delete a student registered in the system by its ID.
+     *
+     * @param int $id
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
     public function destroy(int $id)
     {
 
