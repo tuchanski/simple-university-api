@@ -4,12 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\AuthService;
 use Illuminate\Http\Request;
 use Validator;
 
 
 class AuthController extends Controller
 {
+
+    private AuthService $authService;
+
+    public function __construct(AuthService $authService) {
+        $this->authService = $authService;
+    }
 
     /**
      * Register
@@ -26,15 +33,11 @@ class AuthController extends Controller
             'password' => 'required|confirmed|min:8',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
 
-        $user = new User;
-        $user->name = request()->name;
-        $user->email = request()->email;
-        $user->password = bcrypt(request()->password);
-        $user->save();
+        $user = $this->authService->register($request->all());
 
         return response()->json($user, 201);
     }
@@ -48,9 +51,16 @@ class AuthController extends Controller
      * @unauthenticated
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login()
+    public function login(Request $request)
     {
-        $credentials = request(['email', 'password']);
+        $credentials = $request->all(['email','password']);
+
+        $request->validate(
+            [
+                'email' => 'required|email',
+                'password' => 'required',
+            ]
+        );
 
         if (!$token = auth()->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
