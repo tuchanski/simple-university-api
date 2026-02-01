@@ -5,6 +5,7 @@ namespace App\Repositories\Impl;
 use App\Models\Student;
 use App\Repositories\BaseRepositoryInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 class StudentRepository implements BaseRepositoryInterface
@@ -26,9 +27,9 @@ class StudentRepository implements BaseRepositoryInterface
         }
     }
 
-    public function findAll(): Collection
+    public function findAll(): LengthAwarePaginator
     {
-        return Student::all();
+        return Student::query()->paginate(getenv('PAGINATION_SIZE'));
     }
 
     public function delete(int $id): bool

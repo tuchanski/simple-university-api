@@ -10,6 +10,7 @@ use App\Helpers\Utilities;
 use App\Models\Student;
 use App\Repositories\Impl\StudentRepository;
 use App\Services\StudentService;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 class StudentServiceImpl implements StudentService
@@ -40,7 +41,7 @@ class StudentServiceImpl implements StudentService
         return $this->studentRepository->create($data);
     }
 
-    public function getAllStudents(): Collection
+    public function getAllStudents(): LengthAwarePaginator
     {
         return $this->studentRepository->findAll();
     }
