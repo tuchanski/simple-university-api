@@ -5,7 +5,7 @@ namespace App\Repositories\Impl;
 use App\Models\Course;
 use App\Repositories\BaseRepositoryInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class CourseRepository implements BaseRepositoryInterface
 {
@@ -24,9 +24,9 @@ class CourseRepository implements BaseRepositoryInterface
         }
     }
 
-    public function findAll(): Collection
+    public function findAll(): LengthAwarePaginator
     {
-        return Course::all();
+        return Course::query()->paginate(getenv('PAGINATION_SIZE'));
     }
 
     public function delete(int $id): bool
@@ -45,8 +45,8 @@ class CourseRepository implements BaseRepositoryInterface
         return Course::query()->count();
     }
 
-    public function findAllByProfessorId(int $professorId): Collection {
-        return Course::query()->where('professor_id', $professorId)->get();
+    public function findAllByProfessorId(int $professorId): LengthAwarePaginator {
+        return Course::query()->where('professor_id', $professorId)->paginate(getenv('PAGINATION_SIZE'));
     }
 
 }

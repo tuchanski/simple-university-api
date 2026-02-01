@@ -3,13 +3,14 @@
 namespace App\Services;
 
 use App\Models\Course;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 interface CourseService
 {
     public function createCourse(array $data): Course;
 
-    public function getAllCourses(): Collection;
+    public function getAllCourses() : LengthAwarePaginator;
 
     public function getCourseById(int $id): ?Course;
 

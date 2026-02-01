@@ -11,6 +11,7 @@ use App\Helpers\Utilities;
 use App\Models\Professor;
 use App\Repositories\Impl\ProfessorRepository;
 use App\Services\ProfessorService;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 class ProfessorServiceImpl implements ProfessorService
@@ -46,7 +47,7 @@ class ProfessorServiceImpl implements ProfessorService
         return $this->professorRepository->create($data);
     }
 
-    public function getAllProfessors() : Collection
+    public function getAllProfessors() : LengthAwarePaginator
     {
         return $this->professorRepository->findAll();
     }

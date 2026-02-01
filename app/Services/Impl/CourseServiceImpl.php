@@ -18,6 +18,7 @@ use App\Repositories\Impl\CourseRepository;
 use App\Repositories\Impl\ProfessorRepository;
 use App\Repositories\Impl\StudentRepository;
 use App\Services\CourseService;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 class CourseServiceImpl implements CourseService
@@ -66,7 +67,7 @@ class CourseServiceImpl implements CourseService
         return $this->courseRepository->create($data);
     }
 
-    public function getAllCourses(): Collection
+    public function getAllCourses() : LengthAwarePaginator
     {
         return $this->courseRepository->findAll();
     }
