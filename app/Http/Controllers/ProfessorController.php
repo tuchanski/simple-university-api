@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\CpfAlreadyRegisteredException;
+use App\Exceptions\CpfNotValidException;
 use App\Exceptions\EmailAlreadyRegisteredException;
 use App\Exceptions\InvalidEmailException;
 use App\Exceptions\InvalidGenderException;
@@ -49,7 +50,7 @@ class ProfessorController extends Controller
 
         try {
             return response($this->professorService->createProfessor($request->all()), 201);
-        } catch (EmailAlreadyRegisteredException|CpfAlreadyRegisteredException|InvalidGenderException|InvalidEmailException $exception) {
+        } catch (EmailAlreadyRegisteredException|CpfAlreadyRegisteredException|InvalidGenderException|InvalidEmailException|CpfNotValidException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }
@@ -111,7 +112,7 @@ class ProfessorController extends Controller
 
         try {
             return response($this->professorService->updateProfessorById($id, $request->all()), 200);
-        } catch (CpfAlreadyRegisteredException|EmailAlreadyRegisteredException|ProfessorNotFoundException $exception) {
+        } catch (CpfAlreadyRegisteredException|EmailAlreadyRegisteredException|ProfessorNotFoundException|CpfNotValidException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }

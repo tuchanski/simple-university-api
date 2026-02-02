@@ -3,6 +3,7 @@
 namespace App\Services\Impl;
 
 use App\Exceptions\CpfAlreadyRegisteredException;
+use App\Exceptions\CpfNotValidException;
 use App\Exceptions\EmailAlreadyRegisteredException;
 use App\Exceptions\InvalidEmailException;
 use App\Exceptions\InvalidGenderException;
@@ -42,6 +43,10 @@ class ProfessorServiceImpl implements ProfessorService
 
         if (!Utilities::isEmailValid($data['email'])) {
             throw new InvalidEmailException();
+        }
+
+        if (!Utilities::isCpfValid($data['cpf'])) {
+            throw new CpfNotValidException();
         }
 
         return $this->professorRepository->create($data);
@@ -96,6 +101,11 @@ class ProfessorServiceImpl implements ProfessorService
             $data['cpf'] !== null &&
             $data['cpf'] !== $professor->cpf
         ) {
+
+            if (!Utilities::isCpfValid($data['cpf'])) {
+                throw new CpfNotValidException();
+            }
+
             if ($this->professorRepository->existsByCpf($data['cpf'])) {
                 throw new CpfAlreadyRegisteredException();
             }
