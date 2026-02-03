@@ -14,6 +14,7 @@ use App\Services\StudentService;
 use Dedoc\Scramble\Attributes\PathParameter;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class StudentController extends Controller
 {
@@ -51,20 +52,20 @@ class StudentController extends Controller
             return response(['message' => 'Unauthorized'], 401);
         }
 
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:students',
-            'gender' => ['required', Rule::in(Gender::cases())],
-            'phone' => 'string|nullable',
-            'address' => 'required',
-        ]);
+        try {
 
-        try
-        {
-            return response($this->studentService->createStudent($request->all()), 201);
-        }
-        catch (EmailAlreadyRegisteredException|InvalidEmailException|InvalidGenderException $exception)
-        {
+            $request->validate([
+                'name' => 'required',
+                'email' => 'required|email',
+                'gender' => ['required', Rule::in(Gender::cases())],
+                'phone' => 'string|nullable',
+                'address' => 'required',
+            ]);
+
+            return response(['data' => $this->studentService->createStudent($request->all())], 201);
+        } catch (ValidationException $exception) {
+            return response(['errors' => $exception->errors()], 422);
+        } catch (EmailAlreadyRegisteredException|InvalidEmailException|InvalidGenderException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }
@@ -80,12 +81,9 @@ class StudentController extends Controller
     #[PathParameter('id', description: 'The ID of the student being shown', type: 'integer', example: '1')]
     public function show(int $id)
     {
-        try
-        {
-            return response($this->studentService->getStudentById($id), 200);
-        }
-        catch (StudentNotFoundException $exception)
-        {
+        try {
+            return response(['data' => $this->studentService->getStudentById($id)], 200);
+        } catch (StudentNotFoundException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }
@@ -107,22 +105,22 @@ class StudentController extends Controller
             return response(['message' => 'Unauthorized'], 401);
         }
 
-        $request->validate([
-            'name' => '',
-            'email' => '|email|unique:students',
-            'gender' => ['', Rule::in(Gender::cases())],
-            'phone' => 'string|nullable',
-            'address' => '',
-        ]);
+        try {
 
-        try
-        {
-            return response($this->studentService->updateStudentById($id, $request->all()), 200);
-        }
-        catch (EmailAlreadyRegisteredException|StudentNotFoundException|InvalidEmailException|InvalidGenderException $exception) {
+            $request->validate([
+                'name' => '',
+                'email' => 'email',
+                'gender' => [Rule::in(Gender::cases())],
+                'phone' => 'string|nullable',
+                'address' => '',
+            ]);
+
+            return response(['data' => $this->studentService->updateStudentById($id, $request->all())], 200);
+        } catch (ValidationException $exception) {
+            return response(['errors' => $exception->errors()], 422);
+        } catch (EmailAlreadyRegisteredException|StudentNotFoundException|InvalidEmailException|InvalidGenderException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
-
     }
 
     /**
@@ -141,13 +139,10 @@ class StudentController extends Controller
             return response(['message' => 'Unauthorized'], 401);
         }
 
-        try
-        {
+        try {
             $this->studentService->deleteStudentById($id);
             return response(null, 204);
-        }
-        catch (StudentNotFoundException $exception)
-        {
+        } catch (StudentNotFoundException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }
