@@ -23,6 +23,12 @@ class Student extends Model
         'profile_picture',
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'profile_picture',
+    ];
+
     public function courses(): BelongsToMany
     {
         return $this->belongsToMany(Course::class);

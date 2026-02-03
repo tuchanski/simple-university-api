@@ -25,6 +25,12 @@ class Course extends Model
         'professor_id',
     ];
 
+    protected $hidden = [
+        'professor_id',
+        'created_at',
+        'updated_at',
+    ];
+
     public function professor(): BelongsTo
     {
         return $this->belongsTo(Professor::class);
