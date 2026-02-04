@@ -51,10 +51,8 @@ class ProfessorController extends Controller
             ]);
 
             return response($this->professorService->createProfessor($request->all()), 201);
-        } catch (EmailAlreadyRegisteredException|CpfAlreadyRegisteredException|InvalidGenderException|InvalidEmailException|CpfNotValidException $exception) {
+        } catch (EmailAlreadyRegisteredException|CpfAlreadyRegisteredException|InvalidGenderException|InvalidEmailException|CpfNotValidException|ValidationException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
-        } catch (ValidationException $exception) {
-            return GlobalExceptionHandler::retrieveValidationExceptionResponse($exception);
         }
     }
 
@@ -116,10 +114,8 @@ class ProfessorController extends Controller
             ]);
 
             return response($this->professorService->updateProfessorById($id, $request->all()), 200);
-        } catch (CpfAlreadyRegisteredException|EmailAlreadyRegisteredException|ProfessorNotFoundException|CpfNotValidException $exception) {
+        } catch (CpfAlreadyRegisteredException|EmailAlreadyRegisteredException|ProfessorNotFoundException|CpfNotValidException|ValidationException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
-        } catch (ValidationException $exception) {
-            return GlobalExceptionHandler::retrieveValidationExceptionResponse($exception);
         }
     }
 

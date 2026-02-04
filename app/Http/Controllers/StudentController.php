@@ -63,9 +63,7 @@ class StudentController extends Controller
             ]);
 
             return response(['data' => $this->studentService->createStudent($request->all())], 201);
-        } catch (ValidationException $exception) {
-            return response(['errors' => $exception->errors()], 422);
-        } catch (EmailAlreadyRegisteredException|InvalidEmailException|InvalidGenderException $exception) {
+        } catch (EmailAlreadyRegisteredException|InvalidEmailException|InvalidGenderException|ValidationException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }
@@ -116,9 +114,7 @@ class StudentController extends Controller
             ]);
 
             return response(['data' => $this->studentService->updateStudentById($id, $request->all())], 200);
-        } catch (ValidationException $exception) {
-            return response(['errors' => $exception->errors()], 422);
-        } catch (EmailAlreadyRegisteredException|StudentNotFoundException|InvalidEmailException|InvalidGenderException $exception) {
+        } catch (EmailAlreadyRegisteredException|StudentNotFoundException|InvalidEmailException|InvalidGenderException|ValidationException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }

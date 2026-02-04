@@ -3,6 +3,8 @@
 namespace App\Helpers;
 
 use Illuminate\Validation\ValidationException;
+use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Http\Response;
 
 class GlobalExceptionHandler
 {
@@ -11,8 +13,14 @@ class GlobalExceptionHandler
         //
     }
 
-    public static function retrieveResponse(\Exception $exception) : \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+    public static function retrieveResponse(\Exception $exception) : ResponseFactory|Response
     {
+        if ($exception instanceof ValidationException) {
+            return response([
+                'errors' => $exception->errors()
+            ], 422);
+        }
+
         return response([
             'error' =>
                 [
@@ -20,11 +28,5 @@ class GlobalExceptionHandler
                 ]
         ], $exception->getCode());
     }
-
-    public static function retrieveValidationExceptionResponse(ValidationException $exception) : \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-    {
-        return response(['errors' => $exception->errors()], 422);
-    }
-
 
 }

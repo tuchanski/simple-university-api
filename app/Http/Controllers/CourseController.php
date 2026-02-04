@@ -74,9 +74,7 @@ class CourseController extends Controller
             ]);
 
             return response($this->courseService->createCourse($request->all()), 201);
-        } catch (ValidationException $exception) {
-            return GlobalExceptionHandler::retrieveValidationExceptionResponse($exception);
-        } catch (InvalidLangException|InvalidLevelException|InvalidStatusException|ProfessorNotFoundException $exception) {
+        } catch (InvalidLangException|InvalidLevelException|InvalidStatusException|ProfessorNotFoundException|ValidationException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }
@@ -127,10 +125,8 @@ class CourseController extends Controller
             ]);
 
             return response($this->courseService->updateCourseById($id, $request->all()), 200);
-        } catch (CourseNotFoundException $exception) {
+        } catch (CourseNotFoundException|ValidationException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
-        } catch (ValidationException $exception) {
-            return response(['errors' => $exception->errors()], 422);
         }
     }
 
@@ -181,10 +177,8 @@ class CourseController extends Controller
 
             $this->courseService->enrollStudent($id, $request->all());
             return response(['message' => 'Student enrolled successfully'], 201);
-        } catch (CourseNotFoundException|StudentAlreadyEnrolledException|StudentNotFoundException $exception) {
+        } catch (CourseNotFoundException|StudentAlreadyEnrolledException|StudentNotFoundException|ValidationException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
-        } catch (ValidationException $exception) {
-            return GlobalExceptionHandler::retrieveValidationExceptionResponse($exception);
         }
     }
 
@@ -211,10 +205,8 @@ class CourseController extends Controller
 
             $this->courseService->unenrollStudent($id, $request->all());
             return response(null, 204);
-        } catch (CourseNotFoundException|StudentNotFoundException|StudentNotEnrolledException $exception) {
+        } catch (CourseNotFoundException|StudentNotFoundException|StudentNotEnrolledException|ValidationException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
-        } catch (ValidationException $exception) {
-            return GlobalExceptionHandler::retrieveValidationExceptionResponse($exception);
         }
     }
 
@@ -259,10 +251,8 @@ class CourseController extends Controller
 
             $this->courseService->enrollProfessor($id, $request->all());
             return response(null, 204);
-        } catch (CourseNotFoundException|ProfessorNotFoundException|ProfessorAlreadyEnrolledException $exception) {
+        } catch (CourseNotFoundException|ProfessorNotFoundException|ProfessorAlreadyEnrolledException|ValidationException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
-        } catch (ValidationException $exception) {
-            return GlobalExceptionHandler::retrieveValidationExceptionResponse($exception);
         }
     }
 
