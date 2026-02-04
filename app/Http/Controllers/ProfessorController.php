@@ -14,6 +14,7 @@ use App\Services\Impl\ProfessorServiceImpl;
 use App\Services\ProfessorService;
 use Dedoc\Scramble\Attributes\PathParameter;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class ProfessorController extends Controller
 {
@@ -39,19 +40,21 @@ class ProfessorController extends Controller
             return response(['message' => 'Unauthorized'], 401);
         }
 
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email',
-            'cpf' => 'required',
-            'gender' => 'required',
-            'phone' => 'required',
-            'address' => 'required',
-        ]);
-
         try {
+            $request->validate([
+                'name' => 'required',
+                'email' => 'required|email',
+                'cpf' => 'required',
+                'gender' => 'required',
+                'phone' => 'required',
+                'address' => 'required',
+            ]);
+
             return response($this->professorService->createProfessor($request->all()), 201);
         } catch (EmailAlreadyRegisteredException|CpfAlreadyRegisteredException|InvalidGenderException|InvalidEmailException|CpfNotValidException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
+        } catch (ValidationException $exception) {
+            return GlobalExceptionHandler::retrieveValidationExceptionResponse($exception);
         }
     }
 
@@ -101,19 +104,22 @@ class ProfessorController extends Controller
             return response(['message' => 'Unauthorized'], 401);
         }
 
-        $request->validate([
-            'name' => '',
-            'email' => 'email',
-            'cpf' => '',
-            'gender' => '',
-            'phone' => '',
-            'address' => '',
-        ]);
-
         try {
+
+            $request->validate([
+                'name' => '',
+                'email' => 'email',
+                'cpf' => '',
+                'gender' => '',
+                'phone' => '',
+                'address' => '',
+            ]);
+
             return response($this->professorService->updateProfessorById($id, $request->all()), 200);
         } catch (CpfAlreadyRegisteredException|EmailAlreadyRegisteredException|ProfessorNotFoundException|CpfNotValidException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
+        } catch (ValidationException $exception) {
+            return GlobalExceptionHandler::retrieveValidationExceptionResponse($exception);
         }
     }
 
