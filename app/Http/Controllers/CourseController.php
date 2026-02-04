@@ -22,6 +22,7 @@ use App\Services\Impl\CourseServiceImpl;
 use Dedoc\Scramble\Attributes\PathParameter;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class CourseController extends Controller
 {
@@ -55,25 +56,27 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
-
         if (!Utilities::isAuthUserAdmin()) {
             return response(['message' => 'Unauthorized'], 401);
         }
 
-        $request->validate([
-            'title' => ['required', 'string'],
-            'description' => ['required', 'string'],
-            'language' => [Rule::in(Language::cases()), 'required'],
-            'level' => [Rule::in(Level::cases()), 'required'],
-            'status' => [Rule::in(Status::cases()), 'required'],
-            'start_date' => ['required', 'date'],
-            'end_date' => 'date',
-            'professor_id' => ['integer', 'exists:professors,id'],
-        ]);
-
         try {
+
+            $request->validate([
+                'title' => ['required', 'string'],
+                'description' => ['required', 'string'],
+                'language' => [Rule::in(Language::cases()), 'required'],
+                'level' => [Rule::in(Level::cases()), 'required'],
+                'status' => [Rule::in(Status::cases()), 'required'],
+                'start_date' => ['required', 'date'],
+                'end_date' => 'date',
+                'professor_id' => ['integer', 'exists:professors,id'],
+            ]);
+
             return response($this->courseService->createCourse($request->all()), 201);
-        } catch (ProfessorNotFoundException|InvalidLevelException|InvalidStatusException|InvalidLangException $exception) {
+        } catch (ValidationException $exception) {
+            return GlobalExceptionHandler::retrieveValidationExceptionResponse($exception);
+        } catch (InvalidLangException|InvalidLevelException|InvalidStatusException|ProfessorNotFoundException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
     }
@@ -111,20 +114,23 @@ class CourseController extends Controller
             return response(['message' => 'Unauthorized'], 401);
         }
 
-        $request->validate([
-            'title' => 'string',
-            'description' => 'string',
-            'language' => Rule::in(Language::cases()),
-            'level' => Rule::in(Level::cases()),
-            'status' => Rule::in(Status::cases()),
-            'start_date' => 'date',
-            'end_date' => 'date',
-        ]);
-
         try {
+
+            $request->validate([
+                'title' => 'string',
+                'description' => 'string',
+                'language' => Rule::in(Language::cases()),
+                'level' => Rule::in(Level::cases()),
+                'status' => Rule::in(Status::cases()),
+                'start_date' => 'date',
+                'end_date' => 'date',
+            ]);
+
             return response($this->courseService->updateCourseById($id, $request->all()), 200);
         } catch (CourseNotFoundException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
+        } catch (ValidationException $exception) {
+            return response(['errors' => $exception->errors()], 422);
         }
     }
 
@@ -167,15 +173,18 @@ class CourseController extends Controller
             return response(['message' => 'Unauthorized'], 401);
         }
 
-        $request->validate([
-            'student_id' => ['required', 'integer', 'exists:students,id'],
-        ]);
-
         try {
+
+            $request->validate([
+                'student_id' => ['required', 'integer', 'exists:students,id'],
+            ]);
+
             $this->courseService->enrollStudent($id, $request->all());
             return response(['message' => 'Student enrolled successfully'], 201);
         } catch (CourseNotFoundException|StudentAlreadyEnrolledException|StudentNotFoundException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
+        } catch (ValidationException $exception) {
+            return GlobalExceptionHandler::retrieveValidationExceptionResponse($exception);
         }
     }
 
@@ -195,15 +204,17 @@ class CourseController extends Controller
             return response(['message' => 'Unauthorized'], 401);
         }
 
-        $request->validate([
-            'student_id' => ['required', 'integer', 'exists:students,id'],
-        ]);
-
         try {
+            $request->validate([
+                'student_id' => ['required', 'integer', 'exists:students,id'],
+            ]);
+
             $this->courseService->unenrollStudent($id, $request->all());
             return response(null, 204);
         } catch (CourseNotFoundException|StudentNotFoundException|StudentNotEnrolledException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
+        } catch (ValidationException $exception) {
+            return GlobalExceptionHandler::retrieveValidationExceptionResponse($exception);
         }
     }
 
@@ -240,15 +251,18 @@ class CourseController extends Controller
             return response(['message' => 'Unauthorized'], 401);
         }
 
-        $request->validate([
-            'professor_id' => ['required', 'integer', 'exists:professors,id'],
-        ]);
-
         try {
+
+            $request->validate([
+                'professor_id' => ['required', 'integer', 'exists:professors,id'],
+            ]);
+
             $this->courseService->enrollProfessor($id, $request->all());
             return response(null, 204);
         } catch (CourseNotFoundException|ProfessorNotFoundException|ProfessorAlreadyEnrolledException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
+        } catch (ValidationException $exception) {
+            return GlobalExceptionHandler::retrieveValidationExceptionResponse($exception);
         }
     }
 
