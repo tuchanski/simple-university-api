@@ -20,6 +20,7 @@ use App\Helpers\Utilities;
 use App\Services\CourseService;
 use App\Services\Impl\CourseServiceImpl;
 use Dedoc\Scramble\Attributes\PathParameter;
+use Dedoc\Scramble\Attributes\Response;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -40,6 +41,7 @@ class CourseController extends Controller
      *
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
+    #[Response(401, 'Unauthenticated', type: 'array{message: "Unauthenticated"}')]
     public function index()
     {
         return response($this->courseService->getAllCourses(), 200);
@@ -54,6 +56,10 @@ class CourseController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      *
      */
+    #[Response(404, 'Not Found', type: 'array{message: "Professor not found"}')]
+    #[Response(400, 'Bad Request', type: 'array{message: "Invalid property"}')]
+    #[Response(401, 'Unauthorized', type: 'array{message: "Unauthorized"}')]
+    #[Response(201, 'Course Created')]
     public function store(Request $request)
     {
         if (!Utilities::isAuthUserAdmin()) {
@@ -88,6 +94,9 @@ class CourseController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     #[PathParameter('id', description: 'The ID of the course being shown', type: 'integer', example: '1')]
+    #[Response(404, 'Not Found', type: 'array{message: "Course not found"}')]
+    #[Response(200, 'Course Found', type: 'array{id: "0", title: "string", description: "string", language: "pt-br",
+     level: "beginner", status: "active", start_date: "2019-01-01", end_date: "2019-01-01"}')]
     public function show(int $id)
     {
         try {
@@ -106,6 +115,10 @@ class CourseController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     #[PathParameter('id', description: 'The ID of the course being updated', type: 'integer', example: '1')]
+    #[Response(404, 'Not Found', type: 'array{message: "Course not found"}')]
+    #[Response(400, 'Bad Request', type: 'array{message: "Invalid property"}')]
+    #[Response(401, 'Unauthorized', type: 'array{message: "Unauthorized"}')]
+    #[Response(200, 'Course Updated', type: 'array{message: "Course updated successfully"}')]
     public function update(int $id, Request $request)
     {
         if (!Utilities::isAuthUserAdmin()) {
@@ -124,7 +137,9 @@ class CourseController extends Controller
                 'end_date' => 'date',
             ]);
 
-            return response($this->courseService->updateCourseById($id, $request->all()), 200);
+            $this->courseService->updateCourseById($id, $request->all());
+
+            return response(['message' => 'Course updated successfully'], 200);
         } catch (CourseNotFoundException|ValidationException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
@@ -139,6 +154,8 @@ class CourseController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     #[PathParameter('id', description: 'The ID of the course being deleted', type: 'integer', example: '1')]
+    #[Response(404, 'Not Found', type: 'array{message: "Course not found"}')]
+    #[Response(401, 'Unauthorized', type: 'array{message: "Unauthorized"}')]
     public function destroy(int $id)
     {
         if (!Utilities::isAuthUserAdmin()) {
@@ -163,6 +180,9 @@ class CourseController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     #[PathParameter('id', description: 'The ID of the targeted course', type: 'integer', example: '1')]
+    #[Response(404, 'Not Found', type: 'array{message: "Entity not found"}')]
+    #[Response(401, 'Unauthorized', type: 'array{message: "Unauthorized"}')]
+    #[Response(201, 'Student Enrolled', type: 'array{message: "Student enrolled successfully"}')]
     public function enrollStudent(int $id, Request $request) {
 
         if (!Utilities::isAuthUserAdmin()) {
@@ -192,6 +212,9 @@ class CourseController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     #[PathParameter('id', description: 'The ID of the targeted course', type: 'integer', example: '1')]
+    #[Response(404, 'Not Found', type: 'array{message: "Entity not found"}')]
+    #[Response(401, 'Unauthorized', type: 'array{message: "Unauthorized"}')]
+    #[Response(400, 'Bad Request', type: 'array{message: "Invalid property"}')]
     public function destroyEnrollStudent(int $id, Request $request) {
 
         if (!Utilities::isAuthUserAdmin()) {
@@ -219,6 +242,8 @@ class CourseController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     #[PathParameter('id', description: 'The ID of the targeted course', type: 'integer', example: '1')]
+    #[Response(404, 'Not Found', type: 'array{message: "Course not found"}')]
+    #[Response(200, 'Enrolled Students')]
     public function getEnrolledStudents(int $id) {
         try {
             return response($this->courseService->getEnrolledStudents($id), 200);
@@ -237,6 +262,10 @@ class CourseController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     #[PathParameter('id', description: 'The ID of the targeted course', type: 'integer', example: '1')]
+    #[Response(404, 'Not Found', type: 'array{message: "Entity not found"}')]
+    #[Response(401, 'Unauthorized', type: 'array{message: "Unauthorized"}')]
+    #[Response(400, 'Bad Request', type: 'array{message: "Invalid property"}')]
+    #[Response(201, 'Professor Enrolled', type: 'array{message: "Professor enrolled successfully"}')]
     public function enrollProfessor(int $id, Request $request) {
 
         if (!Utilities::isAuthUserAdmin()) {
@@ -250,7 +279,7 @@ class CourseController extends Controller
             ]);
 
             $this->courseService->enrollProfessor($id, $request->all());
-            return response(null, 204);
+            return response(['message' => 'Professor enrolled successfully'], 201);
         } catch (CourseNotFoundException|ProfessorNotFoundException|ProfessorAlreadyEnrolledException|ValidationException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
@@ -265,6 +294,9 @@ class CourseController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     #[PathParameter('id', description: 'The ID of the targeted course', type: 'integer', example: '1')]
+    #[Response(404, 'Not Found', type: 'array{message: "Course not found"}')]
+    #[Response(401, 'Unauthorized', type: 'array{message: "Unauthorized"}')]
+    #[Response(400, 'Bad Request', type: 'array{message: "Invalid property"}')]
     public function destroyEnrollProfessor(int $id) {
 
         if (!Utilities::isAuthUserAdmin()) {
