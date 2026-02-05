@@ -53,7 +53,7 @@ Route::prefix('courses')
 
     //Student
     Route::post('/{id}/students', [CourseController::class, 'enrollStudent']);
-    Route::delete('/{id}/students', [CourseController::class, 'destroyEnrollStudent']);
+    Route::delete('/{courseId}/students/{studentId}', [CourseController::class, 'destroyEnrollStudent']);
     Route::get('/{id}/students', [CourseController::class, 'getEnrolledStudents']);
 
     //Professor

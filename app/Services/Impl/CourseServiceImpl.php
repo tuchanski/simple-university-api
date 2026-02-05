@@ -128,20 +128,20 @@ class CourseServiceImpl implements CourseService
         $student->courses()->attach($course);
     }
 
-    public function unenrollStudent(int $courseId, array $data): void {
+    public function unenrollStudent(int $courseId, int $studentId): void {
         $course = $this->courseRepository->findById($courseId);
 
         if (is_null($course)) {
             throw new CourseNotFoundException();
         }
 
-        $student = $this->studentRepository->findById($data['student_id']);
+        $student = $this->studentRepository->findById($studentId);
 
         if (is_null($student)) {
             throw new StudentNotFoundException();
         }
 
-        if (!$course->students()->find($data['student_id'])) {
+        if (!$course->students()->find($studentId)) {
             throw new StudentNotEnrolledException();
         }
 

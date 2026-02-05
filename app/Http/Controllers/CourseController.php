@@ -207,26 +207,23 @@ class CourseController extends Controller
      *
      * Through this route, it is possible to unenroll a student from an existing course.
      *
-     * @param int $id
-     * @param Request $request
+     * @param int $courseId
+     * @param int $studentId
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    #[PathParameter('id', description: 'The ID of the targeted course', type: 'integer', example: '1')]
+    #[PathParameter('courseId', description: 'The ID of the targeted course', type: 'integer', example: '1')]
+    #[PathParameter('studentId', description: 'The ID of the targeted student', type: 'integer', example: '1')]
     #[Response(404, 'Not Found', type: 'array{message: "Entity not found"}')]
     #[Response(401, 'Unauthorized', type: 'array{message: "Unauthorized"}')]
     #[Response(400, 'Bad Request', type: 'array{message: "Invalid property"}')]
-    public function destroyEnrollStudent(int $id, Request $request) {
+    public function destroyEnrollStudent(int $courseId, int $studentId) {
 
         if (!Utilities::isAuthUserAdmin()) {
             return response(['message' => 'Unauthorized'], 401);
         }
 
         try {
-            $request->validate([
-                'student_id' => ['required', 'integer', 'exists:students,id'],
-            ]);
-
-            $this->courseService->unenrollStudent($id, $request->all());
+            $this->courseService->unenrollStudent($courseId, $studentId);
             return response(null, 204);
         } catch (CourseNotFoundException|StudentNotFoundException|StudentNotEnrolledException|ValidationException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
