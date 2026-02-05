@@ -13,6 +13,7 @@ use App\Helpers\Utilities;
 use App\Services\Impl\ProfessorServiceImpl;
 use App\Services\ProfessorService;
 use Dedoc\Scramble\Attributes\PathParameter;
+use Dedoc\Scramble\Attributes\Response;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -33,6 +34,9 @@ class ProfessorController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
+    #[Response(400, 'Bad Request', type: 'array{message: "Invalid property"}')]
+    #[Response(401, 'Unauthorized', type: 'array{message: "Unauthorized"}')]
+    #[Response(201, 'Professor Created')]
     public function store(Request $request)
     {
 
@@ -62,6 +66,7 @@ class ProfessorController extends Controller
      * Through this route, it is possible to retrieve all professors registered in the system.
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
+    #[Response(401, 'Unauthenticated', type: 'array{message: "Unauthenticated"}')]
     public function index()
     {
         return response($this->professorService->getAllProfessors(), 200);
@@ -76,6 +81,9 @@ class ProfessorController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     #[PathParameter('id', description: 'The ID of the professor being shown', type: 'integer', example: '1')]
+    #[Response(404, 'Not Found', type: 'array{message: "Professor not found"}')]
+    #[Response(200, 'Professor Found', type: 'array{id: "0", name: "string", email: "string@email.com",
+     cpf: "000.000.000-00", birth_date: "2000-01-01", gender: "male", phone: "41999999999", address: "Rua X, 123"}')]
     public function show(int $id)
     {
         try {
@@ -95,7 +103,12 @@ class ProfessorController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
+
     #[PathParameter('id', description: 'The ID of the professor being updated', type: 'integer', example: '1')]
+    #[Response(404, 'Not Found', type: 'array{message: "Professor not found"}')]
+    #[Response(400, 'Bad Request', type: 'array{message: "Invalid property"}')]
+    #[Response(401, 'Unauthorized', type: 'array{message: "Unauthorized"}')]
+    #[Response(200, 'Course Updated', type: 'array{message: "Professor updated successfully"}')]
     public function update(int $id, Request $request)
     {
         if (!Utilities::isAuthUserAdmin()) {
@@ -113,7 +126,9 @@ class ProfessorController extends Controller
                 'address' => '',
             ]);
 
-            return response($this->professorService->updateProfessorById($id, $request->all()), 200);
+            $this->professorService->updateProfessorById($id, $request->all());
+
+            return response(['message' => 'Professor updated successfully'], 200);
         } catch (CpfAlreadyRegisteredException|EmailAlreadyRegisteredException|ProfessorNotFoundException|CpfNotValidException|ValidationException $exception) {
             return GlobalExceptionHandler::retrieveResponse($exception);
         }
@@ -127,6 +142,8 @@ class ProfessorController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     #[PathParameter('id', description: 'The ID of the professor being deleted', type: 'integer', example: '1')]
+    #[Response(404, 'Not Found', type: 'array{message: "Professor not found"}')]
+    #[Response(401, 'Unauthorized', type: 'array{message: "Unauthorized"}')]
     public function destroy(int $id)
     {
         if (!Utilities::isAuthUserAdmin()) {
@@ -150,6 +167,7 @@ class ProfessorController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     #[PathParameter('id', description: 'The ID of the professor being analyzed', type: 'integer', example: '1')]
+    #[Response(404, 'Not Found', type: 'array{message: "Professor not found"}')]
     public function coursesIndex(int $id) {
         try {
             return response($this->professorService->getProfessorCourses($id), 200);

@@ -26,6 +26,7 @@ class Professor extends Model
     protected $hidden = [
         'created_at',
         'updated_at',
+        'profile_picture',
     ];
 
     public function courses() {
