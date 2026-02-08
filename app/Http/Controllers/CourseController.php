@@ -74,8 +74,8 @@ class CourseController extends Controller
                 'language' => [Rule::in(Language::cases()), 'required'],
                 'level' => [Rule::in(Level::cases()), 'required'],
                 'status' => [Rule::in(Status::cases()), 'required'],
-                'start_date' => ['required', 'date'],
-                'end_date' => 'date',
+                'start_date' => ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:end_date'],
+                'end_date' => ['date', 'date_format:Y-m-d', 'after_or_equal:start_date'],
                 'professor_id' => ['integer', 'exists:professors,id'],
             ]);
 
@@ -133,8 +133,8 @@ class CourseController extends Controller
                 'language' => Rule::in(Language::cases()),
                 'level' => Rule::in(Level::cases()),
                 'status' => Rule::in(Status::cases()),
-                'start_date' => 'date',
-                'end_date' => 'date',
+                'start_date' => ['date', 'date_format:Y-m-d', 'before_or_equal:end_date'],
+                'end_date' => ['date', 'date_format:Y-m-d', 'after_or_equal:start_date']
             ]);
 
             $this->courseService->updateCourseById($id, $request->all());

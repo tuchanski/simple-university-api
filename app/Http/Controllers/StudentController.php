@@ -65,6 +65,7 @@ class StudentController extends Controller
                 'gender' => ['required', Rule::in(Gender::cases())],
                 'phone' => 'string|nullable',
                 'address' => 'required',
+                'birth_date' => ['date', 'date_format:Y-m-d'],
             ]);
 
             return response($this->studentService->createStudent($request->all()), 201);
@@ -123,6 +124,7 @@ class StudentController extends Controller
                 'gender' => [Rule::in(Gender::cases())],
                 'phone' => 'string|nullable',
                 'address' => '',
+                'birth_date' => ['date', 'date_format:Y-m-d'],
             ]);
 
             $this->studentService->updateStudentById($id, $request->all());
